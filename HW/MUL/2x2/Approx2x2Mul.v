@@ -1,8 +1,5 @@
-//-------------------------------------------
 // Approx2x2Mul
-// Author: Paul Poelzl 
 // Implementation for approximate multiplier (Version 2) 
-//------------------------------------------
 
 module Approx2x2Mul(a, b, out);
     input wire[1:0] a, b;

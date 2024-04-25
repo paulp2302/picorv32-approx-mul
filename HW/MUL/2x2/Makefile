@@ -1,7 +1,7 @@
 #-------------------------------------------------------
 # Internal variables
 #
-TESTBENCH ?= tb_2x2Mul.v # Change name when decided
+TESTBENCH ?= testbench.v # Change name when decided
 #SBY_FILE ?= 2x2Mul.sby # If we want to use sby
 #
 #-------------------------------------------------------
@@ -29,6 +29,6 @@ accurate: Accurate2x2Mul.v
 # Simulate Verilog designs
 #
 %.v: 
- iverilog \
-	-l $(YOSYS_SIMCELLS) \
-	-o $
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $

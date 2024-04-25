@@ -1,0 +1,126 @@
+$date
+	Thu Apr 25 12:57:27 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ns
+$end
+$scope module AccurateAddOneBit_tb $end
+$var wire 1 ! Sum $end
+$var wire 1 " Cout $end
+$var reg 1 # A $end
+$var reg 1 $ B $end
+$var reg 1 % Cin $end
+$var reg 1 & Cout_expct $end
+$var reg 1 ' Sum_expct $end
+$var reg 1 ( clk $end
+$var reg 32 ) errors [31:0] $end
+$var reg 1 * reset $end
+$var reg 32 + vectornum [31:0] $end
+$scope module uut $end
+$var wire 1 # A $end
+$var wire 1 $ B $end
+$var wire 1 % Cin $end
+$var wire 1 " Cout $end
+$var wire 1 ! Sum $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b0 +
+1*
+b0 )
+1(
+0'
+0&
+0%
+0$
+0#
+0"
+0!
+$end
+#5
+0(
+#10
+1(
+0*
+#15
+b1 +
+0(
+#20
+1(
+#21
+1!
+1%
+1'
+#25
+b10 +
+0(
+#30
+1(
+#31
+1!
+1$
+0%
+#35
+b11 +
+0(
+#40
+1(
+#41
+1"
+0!
+1%
+0'
+1&
+#45
+b100 +
+0(
+#50
+1(
+#51
+0"
+1!
+1#
+0$
+0%
+1'
+0&
+#55
+b101 +
+0(
+#60
+1(
+#61
+1"
+0!
+1%
+0'
+1&
+#65
+b110 +
+0(
+#70
+1(
+#71
+0!
+1$
+0%
+#75
+b111 +
+0(
+#80
+1(
+#81
+1!
+1%
+1'
+#85
+b1000 +
+0(

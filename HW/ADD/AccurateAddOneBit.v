@@ -6,7 +6,7 @@ module AccurateAddOneBit (A, B, Cin, Cout, Sum);
     output wire Cout;
     output wire Sum;
 
-    assign Sum  = (A xor B) xor Cin;
-    assign Cout = (A and B) or ((A xor B) and Cin);
+    assign Sum  = (A ^ B) ^ Cin;
+    assign Cout = (A & B) | ((A ^ B) & Cin);
     
 endmodule

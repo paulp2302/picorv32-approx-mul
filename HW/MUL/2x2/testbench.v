@@ -12,8 +12,8 @@ module mul2x2_tb;
     reg[7:0] testvectors[15:0];      // array of testvectors
 
     // Instantiate the design under test:
-    //Accurate2x2Mul(.a(a), .b(b), .out(out));
-    Approx2x2Mul mul(.a(a), .b(b), .out(out));
+    Accurate2x2Mul mul(.a(a), .b(b), .out(out));
+    //Approx2x2Mul mul(.a(a), .b(b), .out(out));
 
     // Generate clock
     always // no sensitivity list
@@ -25,7 +25,8 @@ module mul2x2_tb;
     initial begin
         $dumpfile("mult_tbtv.vcd"); // File with simulation resuls
         $dumpvars(0, mul2x2_tb); // Select which variables are written to file
-        $readmemb("testvectors.tv", testvectors); // Readvectors
+        //$readmemb("tv_approx.tv", testvectors); // Readvectors
+        $readmemb("tv_accurate.tv", testvectors); // Readvectors
         vectornum = 0; errors = 0; // Initialize
         reset = 1;
         #27; reset = 0; // Apply reset wait

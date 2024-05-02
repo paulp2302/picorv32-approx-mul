@@ -9,6 +9,10 @@
 `define ACC_TEST_VECTORS "tv_accurate.tv"
 `define APPROX_TEST_VECTORS "tv_approx.tv"
 
+`ifndef VCD_FILE
+`define VCD_FILE "mul2x2.vcd"
+`endif
+
 module mul2x2_tb;
     //parameter ACC_TEST_VECTORS = "tv_accurate.tv" 
     //parameter APPROX_TEST_VECTORS = "tv_approx.tv"
@@ -19,7 +23,7 @@ module mul2x2_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[7:0] testvectors[15:0];      // array of testvectors
+    reg[7:0] testvectors[0:15];      // array of testvectors
 
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
@@ -35,7 +39,7 @@ module mul2x2_tb;
         end
     
     initial begin
-        $dumpfile("mult_tbtv.vcd"); // File with simulation resuls
+        $dumpfile(`VCD_FILE); // File with simulation resuls
         $dumpvars(0, mul2x2_tb); // Select which variables are written to file 
         if (`TEST_MODE == 0)
             $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors

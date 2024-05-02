@@ -2,7 +2,17 @@
 
 `timescale 100ps/10ps // Unit of time is 100ps
 
+`ifndef TEST_MODE
+`define TEST_MODE 0
+`endif 
+
+`define ACC_TEST_VECTORS "tv_accurate.tv"
+`define APPROX_TEST_VECTORS "tv_approx.tv"
+
 module mul2x2_tb;
+    //parameter ACC_TEST_VECTORS = "tv_accurate.tv" 
+    //parameter APPROX_TEST_VECTORS = "tv_approx.tv"
+
     reg[1:0] a, b;      // Input of DuT
     wire[3:0] out;       // Output of DuT
     reg[3:0] out_exp;   // Expected response
@@ -12,8 +22,10 @@ module mul2x2_tb;
     reg[7:0] testvectors[15:0];      // array of testvectors
 
     // Instantiate the design under test:
-    Accurate2x2Mul mul(.a(a), .b(b), .out(out));
-    //Approx2x2Mul mul(.a(a), .b(b), .out(out));
+    if (`TEST_MODE == 0)
+        Accurate2x2Mul mul(.a(a), .b(b), .out(out));
+    else
+        Approx2x2Mul mul(.a(a), .b(b), .out(out));
 
     // Generate clock
     always // no sensitivity list
@@ -24,9 +36,11 @@ module mul2x2_tb;
     
     initial begin
         $dumpfile("mult_tbtv.vcd"); // File with simulation resuls
-        $dumpvars(0, mul2x2_tb); // Select which variables are written to file
-        //$readmemb("tv_approx.tv", testvectors); // Readvectors
-        $readmemb("tv_accurate.tv", testvectors); // Readvectors
+        $dumpvars(0, mul2x2_tb); // Select which variables are written to file 
+        if (`TEST_MODE == 0)
+            $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors
+        else
+            $readmemb(`APPROX_TEST_VECTORS, testvectors); // Readvectors
         vectornum = 0; errors = 0; // Initialize
         reset = 1;
         #27; reset = 0; // Apply reset wait

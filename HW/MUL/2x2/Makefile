@@ -11,24 +11,34 @@ TESTBENCH ?= testbench.v # Change name when decided
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
 #-------------------------------------------------------
-#
+# TODO
 # Variables
 #
 #VCD_FILES := $(patsubst t)
 #
 #-------------------------------------------------------
+# TODO
+#.PHONY: approx accurate
 #
-.PHONY: approx accurate
+#approx: Approx2x2Mul.v
 #
-approx: Approx2x2Mul.v
-#
-accurate: Accurate2x2Mul.v
+#accurate: Accurate2x2Mul.v
 #
 #-------------------------------------------------------
 #
 # Simulate Verilog designs
 #
-%.v: 
+.PHONY: test
+test:	
 	iverilog \
 		-l $(YOSYS_SIMCELLS) \
-		-o $
+		-o test Approx2x2Mul.v $(TESTBENCH)
+	vvp test
+#
+#-------------------------------------------------------
+#
+# Clean directory
+#
+.PHONY: clean
+clean: 
+	rm -rf test mult_tbtv.vcd

@@ -28,8 +28,8 @@ module mul4x4_tb;
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
         Accurate4x4Mul mul(.a(a), .b(b), .out(out));
-//   else
-//        Approx4x4Mul mul(.a(a), .b(b), .out(out));
+    else
+        Approx4x4MulV1 mul(.a(a), .b(b), .out(out));
 
     // Generate clock
     always // no sensitivity list

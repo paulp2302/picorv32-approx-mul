@@ -1,23 +1,26 @@
 `timescale 1ns/1ns
 
-module AddOneBit_tb;
+module AddMultiBit_tb;
 
-    reg A;
-    reg B;
+    parameter bitWidth = 32;
+
+    reg [bitWidth-1:0] A;
+    reg [bitWidth-1:0] B;
     reg Cin;
+    reg Sub;
     wire Cout;
-    wire Sum;
+    wire [bitWidth-1:0] Sum;
     
-    reg Sum_expct;
+    reg [bitWidth-1:0] Sum_expct;
     reg Cout_expct;
 
     // Instantiate the Unit Under Test (UUT)
-    //AccurateAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
-    ApproxAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+    AccurateAddMultiBit uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
+    //ApproxAddMultiBit uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
 
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[4:0] testvectors [7:0]; // array of testvectors
+    reg[98:0] testvectors [4:0]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -28,10 +31,10 @@ module AddOneBit_tb;
 
     initial
         begin
-            $dumpfile("AddOneBit.vcd"); // File with simulation results
-            $dumpvars(0,AddOneBit_tb); // which variables are written to file
-            //$readmemb("tv_AccurateAddOneBit.tv", testvectors); // Read vectors
-            $readmemb("tv_ApproxAddOneBit.tv", testvectors); // Read vectors
+            $dumpfile("AddMultiBit.vcd"); // File with simulation results
+            $dumpvars(0,AddMultiBit_tb); // which variables are written to file
+            $readmemb("tv_AccurateAddMultiBit.tv", testvectors); // Read vectors
+            //$readmemb("tv_ApproxAddMultiBit.tv", testvectors); // Read vectors
             vectornum = 0; errors = 0; // Initialize
             // Init
             A = 0;
@@ -48,7 +51,7 @@ module AddOneBit_tb;
     // apply test vectors on rising edge of clk
     always @(posedge clk)
         begin
-            #1; {A,B,Cin,Sum_expct,Cout_expct} = testvectors[vectornum]; // Apply inputs
+            #1; {A,B,Cin,Sub,Sum_expct,Cout_expct} = testvectors[vectornum]; // Apply inputs
         end
 
     // Response checker:
@@ -58,14 +61,14 @@ module AddOneBit_tb;
             begin
                 if (Sum !== Sum_expct || Cout !== Cout_expct) // Check outputs
                     begin
-                        $display("Error: inputs = %b", {A,B,Cin});
+                        $display("Error: inputs = %b", {A,B,Cin,Sub});
                         $display(" outputs = %b (%b exp)", {Sum,Cout}, {Sum_expct,Cout_expct});
                         errors = errors + 1;
                     end
 
                 // increment array index and read next testvector
                 vectornum = vectornum + 1;
-                if (testvectors[vectornum] ===5'bx)
+                if (testvectors[vectornum] ===99'bx)
                     begin
                         $display("%d tests completed with %d errors", vectornum, errors);
                         $finish; // End simulation

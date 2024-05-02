@@ -1,5 +1,7 @@
 // Test vector for AccurateAddOneBit
 // Format: A B Cin Sum Cout
+// Sum  = (A ^ B) ^ Cin;
+// Cout = (A & B) | ((A ^ B) & Cin);
 000_00
 001_10
 010_10

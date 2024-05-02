@@ -1,3 +1,4 @@
+// Accurate One Bit Adder Implementation
 module AccurateAddOneBit (A, B, Cin, Cout, Sum);
 
     input  wire A;

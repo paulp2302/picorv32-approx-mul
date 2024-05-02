@@ -1,5 +1,5 @@
 $date
-	Thu Apr 25 12:57:27 2024
+	Thu May  2 09:50:13 2024
 $end
 $version
 	Icarus Verilog
@@ -7,7 +7,7 @@ $end
 $timescale
 	1ns
 $end
-$scope module AccurateAddOneBit_tb $end
+$scope module AddOneBit_tb $end
 $var wire 1 ! Sum $end
 $var wire 1 " Cout $end
 $var reg 1 # A $end
@@ -23,8 +23,8 @@ $scope module uut $end
 $var wire 1 # A $end
 $var wire 1 $ B $end
 $var wire 1 % Cin $end
-$var wire 1 " Cout $end
 $var wire 1 ! Sum $end
+$var wire 1 " Cout $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
@@ -43,42 +43,41 @@ b0 )
 0$
 0#
 0"
-0!
+1!
 $end
 #5
 0(
 #10
 1(
 0*
+#11
+1'
 #15
 b1 +
 0(
 #20
 1(
 #21
-1!
 1%
-1'
 #25
 b10 +
 0(
 #30
 1(
 #31
-1!
+1"
+0!
 1$
 0%
+0'
+1&
 #35
 b11 +
 0(
 #40
 1(
 #41
-1"
-0!
 1%
-0'
-1&
 #45
 b100 +
 0(
@@ -109,7 +108,6 @@ b110 +
 #70
 1(
 #71
-0!
 1$
 0%
 #75
@@ -118,9 +116,7 @@ b111 +
 #80
 1(
 #81
-1!
 1%
-1'
 #85
 b1000 +
 0(

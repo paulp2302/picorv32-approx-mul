@@ -1,4 +1,5 @@
-module AccurateAddOneBit (A, B, Cin, Cout, Sum);
+// Team 5 -> ApproxAdd2 implementation
+module ApproxAddOneBit (A, B, Cin, Cout, Sum);
 
     input  wire A;
     input  wire B;
@@ -6,7 +7,7 @@ module AccurateAddOneBit (A, B, Cin, Cout, Sum);
     output wire Cout;
     output wire Sum;
 
-    assign Sum  = (not B) and ((not A) or (not Cin));
-    assign Cout = not Sum;
+    assign Sum  = (!B) & ((!A) | (!Cin));
+    assign Cout = !Sum;
     
 endmodule

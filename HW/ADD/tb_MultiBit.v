@@ -20,7 +20,7 @@ module AddMultiBit_tb;
 
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[98:0] testvectors [4:0]; // array of testvectors
+    reg[98:0] testvectors [0:4]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -61,8 +61,8 @@ module AddMultiBit_tb;
             begin
                 if (Sum !== Sum_expct || Cout !== Cout_expct) // Check outputs
                     begin
-                        $display("Error: inputs = %b", {A,B,Cin,Sub});
-                        $display(" outputs = %b (%b exp)", {Sum,Cout}, {Sum_expct,Cout_expct});
+                        $display("Error: inputs: A=%h, B=%h, Cin=%b, Sub=%b", {A}, {B}, {Cin}, {Sub});
+                        $display(" outputs: Sum=%h, Cout=%b (Exp: Sum=%h, Cou=%b)", {Sum}, {Cout}, {Sum_expct}, {Cout_expct});
                         errors = errors + 1;
                     end
 

@@ -14,7 +14,7 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 # TODO
 # Variables
 #
-#VCD_FILES := $(patsubst t)
+# VCD_FILES := $(patsubst t)
 #
 #-------------------------------------------------------
 # TODO
@@ -29,7 +29,8 @@ accurate: AccurateAddMulti
 ApproxAddMulti:	
 	iverilog \
 		-l $(YOSYS_SIMCELLS) \
-		-o ApproxAddMulti ../OneBit/ApproxAddOneBit.v ApproxAddMultiBit.v \
+		-o ApproxAddMulti ../OneBit/ApproxAddOneBit.v \
+		 ApproxAddMultiBit.v \
 		$(TESTBENCH) \
 		-D TEST_MODE=1
 	vvp ApproxAddMulti

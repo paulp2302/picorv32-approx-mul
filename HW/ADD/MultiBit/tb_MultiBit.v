@@ -20,7 +20,7 @@ module AddMultiBit_tb;
 
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[98:0] testvectors [0:4]; // array of testvectors
+    reg[98:0] testvectors [0:5]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -32,7 +32,7 @@ module AddMultiBit_tb;
     initial
         begin
             $dumpfile("AddMultiBit.vcd"); // File with simulation results
-            $dumpvars(0,AddMultiBit_tb); // which variables are written to file
+            $dumpvars(0, AddMultiBit_tb); // which variables are written to file
             $readmemb("tv_AccurateAddMultiBit.tv", testvectors); // Read vectors
             //$readmemb("tv_ApproxAddMultiBit.tv", testvectors); // Read vectors
             vectornum = 0; errors = 0; // Initialize
@@ -62,7 +62,7 @@ module AddMultiBit_tb;
                 if (Sum !== Sum_expct || Cout !== Cout_expct) // Check outputs
                     begin
                         $display("Error: inputs: A=%h, B=%h, Cin=%b, Sub=%b", {A}, {B}, {Cin}, {Sub});
-                        $display(" outputs: Sum=%h, Cout=%b (Exp: Sum=%h, Cou=%b)", {Sum}, {Cout}, {Sum_expct}, {Cout_expct});
+                        $display(" outputs: Sum=%h, Cout=%b (Exp: Sum=%h, Cout=%b)", {Sum}, {Cout}, {Sum_expct}, {Cout_expct});
                         errors = errors + 1;
                     end
 

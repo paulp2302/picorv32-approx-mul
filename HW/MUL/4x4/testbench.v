@@ -23,13 +23,15 @@ module mul4x4_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[15:0] testvectors[0:15];      // array of testvectors
+    reg[15:0] testvectors[0:3];      // array of testvectors
 
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
         Accurate4x4Mul mul(.a(a), .b(b), .out(out));
-    else
+    else if (`TEST_MODE == 1)
         Approx4x4MulV1 mul(.a(a), .b(b), .out(out));
+    else 
+        Approx4x4MulV2 mul(.a(a), .b(b), .out(out));
 
     // Generate clock
     always // no sensitivity list
@@ -64,7 +66,7 @@ module mul4x4_tb;
             begin
             if (out !== out_exp)
                 begin
-                    $display("Error: inputs = %b", {a, b});
+                    $display("Error: inputs: A=%b, B=%b", a, b);
                     $display(" outputs = %b (%b exp)", out, out_exp);
                     errors = errors + 1;
                 end

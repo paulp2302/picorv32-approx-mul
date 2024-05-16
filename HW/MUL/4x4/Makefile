@@ -18,9 +18,11 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
 #-------------------------------------------------------
 # TODO
-.PHONY: approx accurate
+.PHONY: approx1 approx2 accurate
 #
-approx: Approx4x4MulV1
+approx1: Approx4x4MulV1
+#
+approx2: Approx4x4MulV2
 #
 accurate: Accurate4x4Mul
 #
@@ -34,6 +36,17 @@ Approx4x4MulV1:
 		$(TESTBENCH) \
 		-D TEST_MODE=1
 	vvp Approx4x4MulV1
+
+Approx4x4MulV2:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx4x4MulV2 ../2x2/Approx2x2Mul.v \
+		../../ADD/OneBit/ApproxAddOneBit.v \
+		../../ADD/MultiBit/ApproxAddMultiBit.v \
+		Approx4x4MulV2.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=2
+	vvp Approx4x4MulV2
 
 Accurate4x4Mul:	
 	iverilog \
@@ -61,4 +74,4 @@ Accurate4x4Mul:
 #
 .PHONY: clean
 clean: 
-	rm -rf test *.vcd Accurate4x4Mul Approx4x4MulV1
+	rm -rf test *.vcd Accurate4x4Mul Approx4x4MulV1 Approx4x4MulV2

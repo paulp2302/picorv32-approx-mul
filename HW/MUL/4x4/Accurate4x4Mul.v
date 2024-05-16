@@ -21,4 +21,5 @@ module Accurate4x4Mul(a, b, out);
     Accurate2x2Mul hxh(.a (a[3:2]), .b (b[3:2]), .out (hh[7:4]));
 
     assign out = ll + lh + hl + hh;
-endmodule;
+    
+endmodule

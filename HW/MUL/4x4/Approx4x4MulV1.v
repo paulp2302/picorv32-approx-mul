@@ -21,4 +21,5 @@ module Approx4x4MulV1(a, b, out);
     Approx2x2Mul hxh(.a (a[3:2]), .b (b[3:2]), .out (hh[7:4]));
 
     assign out = ll + lh + hl + hh;
-endmodule;
+    
+endmodule

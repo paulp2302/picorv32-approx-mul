@@ -1,7 +1,7 @@
 #-------------------------------------------------------
 # Internal variables
 #
-TESTBENCH ?= tb_MultiBit.v # Change name when decided
+TESTBENCH ?= tb_OneBit.v # Change name when decided
 #SBY_FILE ?= 2x2Mul.sby # If we want to use sby
 #
 #-------------------------------------------------------
@@ -20,27 +20,27 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 # TODO
 .PHONY: approx accurate
 #
-approx: ApproxAddMulti
+approx: ApproxAddOne
 #
-accurate: AccurateAddMulti
+accurate: AccurateAddOne
 #
 #-------------------------------------------------------
 #
-ApproxAddMulti:	
+ApproxAddOne:	
 	iverilog \
 		-l $(YOSYS_SIMCELLS) \
-		-o ApproxAddMulti ApproxAddOneBit.v ApproxAddMultiBit.v \
+		-o ApproxAddOne ApproxAddOneBit.v \
 		$(TESTBENCH) \
 		-D TEST_MODE=1
-	vvp ApproxAddMulti
+	vvp ApproxAddOne
 
-AccurateAddMulti:	
+AccurateAddOne:	
 	iverilog \
 		-l $(YOSYS_SIMCELLS) \
-		-o AccurateAddMulti AccurateAddOneBit.v AccurateAddMultiBit.v \
+		-o AccurateAddOne AccurateAddOneBit.v \
 		$(TESTBENCH) \
 		-D TEST_MODE=0
-	vvp AccurateAddMulti
+	vvp AccurateAddOne
 
 #-------------------------------------------------------
 #
@@ -59,5 +59,5 @@ AccurateAddMulti:
 #
 .PHONY: clean
 clean: 
-	rm -rf  AccurateAddMulti ApproxAddMulti
+	rm -rf  AccurateAddOne ApproxAddOne
 	rm -rf *.vcd

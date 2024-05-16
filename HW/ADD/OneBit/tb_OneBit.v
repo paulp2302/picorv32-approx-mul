@@ -1,5 +1,17 @@
 `timescale 1ns/1ns
 
+`ifndef TEST_MODE
+`define TEST_MODE 0
+`endif 
+
+`define ACC_TEST_VECTORS "tv_accurate.tv"
+`define APPROX_TEST_VECTORS "tv_approx.tv"
+
+`ifndef VCD_FILE
+`define VCD_FILE "onebit.vcd"
+`endif
+
+
 module AddOneBit_tb;
 
     reg A;
@@ -12,8 +24,10 @@ module AddOneBit_tb;
     reg Cout_expct;
 
     // Instantiate the Unit Under Test (UUT)
-    //AccurateAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
-    ApproxAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+    if (`TEST_MODE == 0)
+        AccurateAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+    else
+        ApproxAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
 
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
@@ -28,10 +42,12 @@ module AddOneBit_tb;
 
     initial
         begin
-            $dumpfile("AddOneBit.vcd"); // File with simulation results
-            $dumpvars(0,AddOneBit_tb); // which variables are written to file
-            //$readmemb("tv_AccurateAddOneBit.tv", testvectors); // Read vectors
-            $readmemb("tv_ApproxAddOneBit.tv", testvectors); // Read vectors
+            $dumpfile(`VCD_FILE); // File with simulation resuls
+            $dumpvars(0, AddOneBit_tb); // Select which variables are written to file
+            if (`TEST_MODE == 0)
+                $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors
+            else
+                $readmemb(`APPROX_TEST_VECTORS, testvectors); // Readvectors
             vectornum = 0; errors = 0; // Initialize
             // Init
             A = 0;

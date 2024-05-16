@@ -1,8 +1,20 @@
 `timescale 1ns/1ns
 
+
+`ifndef TEST_MODE
+`define TEST_MODE 0
+`endif 
+
+`define ACC_TEST_VECTORS "tv_accurate.tv"
+`define APPROX_TEST_VECTORS "tv_approx.tv"
+
+`ifndef VCD_FILE
+`define VCD_FILE "multibit.vcd"
+`endif
+
 module AddMultiBit_tb;
 
-    parameter bitWidth = 32;
+    parameter bitWidth = 8;
 
     reg [bitWidth-1:0] A;
     reg [bitWidth-1:0] B;
@@ -15,12 +27,14 @@ module AddMultiBit_tb;
     reg Cout_expct;
 
     // Instantiate the Unit Under Test (UUT)
-    AccurateAddMultiBit uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
-    //ApproxAddMultiBit uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
-
+    if (`TEST_MODE == 0)
+        AccurateAddMultiBit #(.bitWidth(bitWidth)) uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
+    else
+        ApproxAddMultiBit #(.bitWidth(bitWidth)) uut (.A(A), .B(B), .Cin(Cin), .Sub(Sub), .Cout(Cout), .Sum(Sum));
+    
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[98:0] testvectors [0:5]; // array of testvectors
+    reg[26:0] testvectors [0:9]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -31,10 +45,13 @@ module AddMultiBit_tb;
 
     initial
         begin
-            $dumpfile("AddMultiBit.vcd"); // File with simulation results
+            $dumpfile(`VCD_FILE); // File with simulation results
             $dumpvars(0, AddMultiBit_tb); // which variables are written to file
-            $readmemb("tv_AccurateAddMultiBit.tv", testvectors); // Read vectors
-            //$readmemb("tv_ApproxAddMultiBit.tv", testvectors); // Read vectors
+            if (`TEST_MODE == 0)
+                $readmemb(`ACC_TEST_VECTORS, testvectors); // Read vectors
+            else
+                $readmemb(`APPROX_TEST_VECTORS, testvectors); // Read vectors
+        
             vectornum = 0; errors = 0; // Initialize
             // Init
             A = 0;
@@ -68,7 +85,7 @@ module AddMultiBit_tb;
 
                 // increment array index and read next testvector
                 vectornum = vectornum + 1;
-                if (testvectors[vectornum] ===99'bx)
+                if (testvectors[vectornum] ===27'bx)
                     begin
                         $display("%d tests completed with %d errors", vectornum, errors);
                         $finish; // End simulation

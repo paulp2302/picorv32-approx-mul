@@ -48,4 +48,4 @@ test:
 #
 .PHONY: clean
 clean: 
-	rm -rf test %.vcd pcpi
+	rm -rf test *.vcd pcpi

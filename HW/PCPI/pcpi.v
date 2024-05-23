@@ -9,7 +9,7 @@ module pcpi(
 );
 
 parameter SIZE = 4;
-parameter MUL16 = 7'b0000000;
+parameter MUL16 = 7'b0001011;
 parameter IDLE = 3'b001, DECODE = 3'b010, EXECUTE = 3'b011, DONE = 3'b100;
 
 // Internal declarations

@@ -1,7 +1,7 @@
 #-------------------------------------------------------
 # Internal variables
 #
-TESTBENCH ?= tb_OneBit.v # Change name when decided
+TESTBENCH ?= testbench.v # Change name when decided
 #SBY_FILE ?= 2x2Mul.sby # If we want to use sby
 #
 #-------------------------------------------------------

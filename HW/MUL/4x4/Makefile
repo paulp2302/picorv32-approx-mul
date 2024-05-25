@@ -1,8 +1,7 @@
 #-------------------------------------------------------
 # Internal variables
 #
-TESTBENCH ?= testbench.v # Change name when decided
-#SBY_FILE ?= 2x2Mul.sby # If we want to use sby
+TESTBENCH ?= testbench.v
 #
 #-------------------------------------------------------
 #
@@ -11,62 +10,91 @@ TESTBENCH ?= testbench.v # Change name when decided
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
 #-------------------------------------------------------
-# TODO
+# 
 # Variables
+# Define source directories
+SRC_DIRS := . ../2x2/ ../../ADD/
+SIM_DIR := ./sim
+SYNTH_DIR := ./synth
 #
-#VCD_FILES := $(patsubst t)
+# Define internal variable for the different sources
+SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name 'testbench.v')
 #
-#-------------------------------------------------------
-# TODO
-.PHONY: approx1 approx2 accurate
+# VCD_FILES := $(patsubst ./%.v,./%.vcd,$(wildcard ./*Mul*.v))
 #
-approx1: Approx4x4MulV1
+# Define the suffixes used in this Makefile
+.SUFFIXES:
+.SUFFIXES: .v .iverilog .vcd .synth
 #
-approx2: Approx4x4MulV2
+#------------------------------------------------------------------------------
 #
-accurate: Accurate4x4Mul
+# Define targets for simulation 'sim-accurate', 'sim-approx1', 'sim-approx2'
 #
-#-------------------------------------------------------
+.PHONY: sim sim-accurate sim-approx1 sim-approx2 
+sim: sim-accurate sim-approx1 sim-approx2
+sim-accurate: 
+	@$(MAKE) $(SIM_DIR)/Accurate4x4Mul.vcd MODE=0
+sim-approx1: 
+	@$(MAKE) $(SIM_DIR)/Approx4x4MulV1.vcd MODE=1
+sim-approx2:
+	@$(MAKE) $(SIM_DIR)/Approx4x4MulV2.vcd MODE=2
 #
-Approx4x4MulV1:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx4x4MulV1 ../2x2/Approx2x2Mul.v \
-		Approx4x4MulV1.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=1
-	vvp Approx4x4MulV1
-
-Approx4x4MulV2:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx4x4MulV2 ../2x2/Approx2x2Mul.v \
-		../../ADD/OneBit/ApproxAddOneBit.v \
-		../../ADD/MultiBit/ApproxAddMultiBit.v \
-		Approx4x4MulV2.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=2
-	vvp Approx4x4MulV2
-
-Accurate4x4Mul:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Accurate4x4Mul ../2x2/Accurate2x2Mul.v \
-		Accurate4x4Mul.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=0
-	vvp Accurate4x4Mul
-
+#
+# Define targets for synthesis 'synth-accurate', 'synth-approx1', 'synth-approx2'
+#
+.PHONY: synth synth-accurate synth-approx1 synth-approx2
+synth: synth-accurate synth-approx1 synth-approx2
+synth-accurate: $(SYNTH_DIR)/Accurate4x4Mul.v
+synth-approx1: $(SYNTH_DIR)/Approx4x4MulV1.v
+synth-approx2: $(SYNTH_DIR)/Approx4x4MulV2.v
+#
+# Define targets for simulation of the synthesized modules 
+# 'sim-synth-accurate', 'sim-synth-approx1', 'sim-synth-approx2'
+#
+.PHONY: sim-synth sim-synth-accurate sim-synth-approx1 sim-synth-approx2
+sim-synth: sim-synth-accurate sim-synth-approx1 sim-synth-approx2
+sim-synth-accurate: 
+	@$(MAKE) $(SIM_DIR)/Accurate4x4Mul_synth.vcd MODE=0
+sim-synth-approx1:
+	@$(MAKE) $(SIM_DIR)/Approx4x4MulV1_synth.vcd MODE=1
+sim-synth-approx2:
+	@$(MAKE) $(SIM_DIR)/Approx4x4MulV2_synth.vcd MODE=2
+#
 #-------------------------------------------------------
 #
 # Simulate Verilog designs
 #
-#.PHONY: test
-#test:	
-#	iverilog \
-#		-l $(YOSYS_SIMCELLS) \
-#		-o test Approx2x2Mul.v $(TESTBENCH)
-#	vvp test
+$(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*.iverilog \
+		$^ \
+		-D TEST_MODE=$(MODE) \
+		-D 'VCD_FILE="$@"'
+	vvp $(SIM_DIR)/$*.iverilog
+#
+#------------------------------------------------------------------------------
+#
+# Synthesize Verilog designs
+#
+$(SYNTH_DIR)/%.v: %.ys
+	mkdir -p $(dir $@)
+	yosys -s $^
+#
+#------------------------------------------------------------------------------
+#
+# Simulate the synthesized Verilog designs
+#
+$(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*_synth.iverilog \
+		$^ \
+		-D TEST_MODE=$(MODE) \
+		-D 'VCD_FILE="$@"'
+	vvp $(SIM_DIR)/$*_synth.iverilog
 #
 #-------------------------------------------------------
 #
@@ -74,4 +102,6 @@ Accurate4x4Mul:
 #
 .PHONY: clean
 clean: 
-	rm -rf test *.vcd Accurate4x4Mul Approx4x4MulV1 Approx4x4MulV2
+	rm -rf sim synth
+#
+#------------------------------------------------------------------------------

@@ -50,6 +50,6 @@ if __name__ == "__main__":
         # Calculate the result and write the data to the output file
         for i in range(test_vec_size):
             result = approxaddN(in1[i], in2[i], bits_approx)
-            result = limitlen(result, 8)
+            result = limitlen(result, width)
             data = f'{in1[i]:0{width}b}_{in2[i]:0{width}b}_{result:0{width}b}\n'
             file.write(data)

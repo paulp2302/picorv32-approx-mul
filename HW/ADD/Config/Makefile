@@ -2,7 +2,8 @@
 # Internal variables
 #
 TESTBENCH ?= testbench.v
-TESTVECTOR ?= tv_conf.tv
+TEST_VECTORS ?= tv_conf.tv
+ADDN_PATH ?= ../ADD/Config/$(TESTVECTOR)
 #
 #------------------------------------------------------------------------------
 #
@@ -15,21 +16,22 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 # Variables
 #
 # Default values for width and accuracy
-WIDTH ?= 8
-N ?= 4
+WIDTH_ADD ?= 8
+N_ADD ?= 4
 #
 # Set environment variables for the testvector generations
-export WIDTH_ADD = $(WIDTH)
-export N_ADD = $(N)
-export TEST_VECTORS = $(TESTVECTOR)
-export ADDN_PATH = ../ADD/Config/$(TESTVECTOR)
+export WIDTH_ADD
+export N_ADD
+export TEST_VECTORS
+export ADDN_PATH
 #
 # Define source directories
 SRC_DIRS := . ../../ADD/OneBit
 SIM_DIR := ./sim
 #
 # Define internal variable for the different sources
-SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name 'testbench.v')
+SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name '*testbench.v' \
+		-and -not -name '$(TESTBENCH)')
 #
 # Define the suffixes used in this Makefile
 .SUFFIXES:
@@ -73,10 +75,10 @@ help:
 	@echo "    OPTION ?= value"
 	@echo ""
 	@echo ""
-	@echo "WIDTH=<int>"
+	@echo "WIDTH_ADD=<int>"
 	@echo "    Specifies the width of the test vectors of the configurable n-Bit adder."
 	@echo ""
-	@echo "N=<int>"
+	@echo "N_ADD=<int>"
 	@echo "    Specifies the number of approximate bits of the configurable n-Bit adder."
 	@echo ""
 	@echo "TESTBENCH=<filename>"
@@ -84,6 +86,9 @@ help:
 	@echo ""
 	@echo "TESTVECTOR=<int>"
 	@echo "    Specifies the name of the testvector file."
+	@echo ""
+	@echo "ADDN_PATH=<path/to/file>"
+	@echo "    Specifies the path form the REF to the ADD/Config directory."
 	@echo ""
 	@echo ""
 	@echo "Targets"
@@ -97,7 +102,6 @@ help:
 	@echo ""
 	@echo "make clean"
 	@echo "    Delete generated files"
-	@echo "    But does not delete testvector files written to other directories"
 	@echo ""
 #
 #------------------------------------------------------------------------------

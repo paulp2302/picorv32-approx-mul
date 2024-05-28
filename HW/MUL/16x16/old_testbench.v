@@ -6,24 +6,11 @@
 `define TEST_MODE 0
 `endif 
 
-`ifndef TEST_VECTORS
-`define TEST_VECTORS "tv_config.tv"
-`endif 
+`define ACC_TEST_VECTORS "tv_config.tv"
+`define APPROX_TEST_VECTORS "tv_approx.tv"
 
 `ifndef VCD_FILE
 `define VCD_FILE "mul16x16.vcd"
-`endif
-
-`ifndef N16
-`define N16 0
-`endif
-
-`ifndef N8
-`define N8 0
-`endif
-
-`ifndef N4
-`define N4 0
 `endif
 
 module mul16x16_tb;
@@ -40,10 +27,18 @@ module mul16x16_tb;
 
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
-        Config16x16Mul #(.N16(`N16), .N8(`N8), .N4(`N4)) mul(.a(a), .b(b), .out(out)); 
+        Config16x16Mul  mul(.a(a), .b(b), .out(out)); //
     else if (`TEST_MODE == 1)
-        Config16x16Mul mul(.a(a), .b(b), .out(out));
-    
+        Approx16x16MulV1 mul(.a(a), .b(b), .out(out));
+    else if (`TEST_MODE == 2)
+        Approx16x16MulV2 mul(.a(a), .b(b), .out(out));
+    else if (`TEST_MODE == 3)
+        Approx16x16MulV3 mul(.a(a), .b(b), .out(out));
+    else if (`TEST_MODE == 4)
+        Approx16x16MulV4 mul(.a(a), .b(b), .out(out));
+    else
+        Approx16x16MulV5 mul(.a(a), .b(b), .out(out));
+
     // Generate clock
     always // no sensitivity list
         begin
@@ -54,7 +49,10 @@ module mul16x16_tb;
     initial begin
         $dumpfile(`VCD_FILE); // File with simulation resuls
         $dumpvars(0, mul16x16_tb); // Select which variables are written to file 
-        $readmemb(`TEST_VECTORS, testvectors); // Readvectors
+        if (`TEST_MODE == 0)
+            $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors
+        else
+            $readmemb(`APPROX_TEST_VECTORS, testvectors); // Readvectors
         vectornum = 0; errors = 0; // Initialize
         reset = 1;
         #27; reset = 0; // Apply reset wait

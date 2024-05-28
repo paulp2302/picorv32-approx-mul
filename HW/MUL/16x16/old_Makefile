@@ -1,0 +1,141 @@
+#-------------------------------------------------------
+# Internal variables
+#
+TESTBENCH ?= testbench.v # Change name when decided
+#SBY_FILE ?= 8x8Mul.sby # If we want to use sby
+#
+#-------------------------------------------------------
+#
+# Simulation cell library
+#
+YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
+#
+#-------------------------------------------------------
+# TODO
+# Variables
+#
+#VCD_FILES := $(patsubst t)
+#
+#-------------------------------------------------------
+# TODO
+.PHONY: approx1 approx2 accurate
+#
+approx1: Approx16x16MulV1
+#
+approx2: Approx16x16MulV2
+#
+approx3: Approx16x16MulV3
+#
+approx4: Approx16x16MulV4
+#
+approx5: Approx16x16MulV5
+#
+accurate: Accurate16x16Mul
+#
+#-------------------------------------------------------
+#
+Approx16x16MulV1:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx16x16MulV1 ../2x2/Approx2x2Mul.v \
+		../4x4/Approx4x4MulV1.v \
+		../8x8/Approx8x8MulV1.v \
+		Approx16x16MulV1.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=1
+	vvp Approx16x16MulV1
+
+Approx16x16MulV2:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx16x16MulV2 ../2x2/Approx2x2Mul.v \
+		../4x4/Approx4x4MulV2.v \
+		../8x8/Approx8x8MulV2.v \
+		../../ADD/OneBit/ApproxAddOneBit.v \
+		../../ADD/MultiBit/ApproxAddMultiBit.v \
+		Approx16x16MulV2.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=2
+	vvp Approx16x16MulV2
+
+Approx16x16MulV3:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx16x16MulV3 ../2x2/Approx2x2Mul.v \
+		../4x4/Approx4x4MulV1.v \
+		../8x8/Approx8x8MulV3.v \
+		../../ADD/OneBit/ApproxAddOneBit.v \
+		../../ADD/MultiBit/ApproxAddMultiBit.v \
+		Approx16x16MulV3.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=3
+	vvp Approx16x16MulV3
+
+Approx16x16MulV4:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx16x16MulV4 ../2x2/Approx2x2Mul.v \
+		../4x4/Approx4x4MulV1.v \
+		../8x8/Approx8x8MulV1.v \
+		../../ADD/OneBit/ApproxAddOneBit.v \
+		../../ADD/MultiBit/ApproxAddMultiBit.v \
+		Approx16x16MulV4.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=4
+	vvp Approx16x16MulV4
+
+Approx16x16MulV5:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Approx16x16MulV5 ../2x2/Approx2x2Mul.v \
+		../4x4/Approx4x4MulV2.v \
+		../8x8/Approx8x8MulV2.v \
+		../2x2/Accurate2x2Mul.v \
+		../4x4/Accurate4x4Mul.v \
+		../8x8/Accurate8x8Mul.v \
+		../../ADD/OneBit/ApproxAddOneBit.v \
+		../../ADD/MultiBit/ApproxAddMultiBit.v \
+		Approx16x16MulV5.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=5
+	vvp Approx16x16MulV5
+
+Accurate16x16Mul:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Accurate16x16Mul ../2x2/Accurate2x2Mul.v \
+		../4x4/Accurate4x4Mul.v \
+		../8x8/Accurate8x8Mul.v \
+		Accurate16x16Mul.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=0
+	vvp Accurate16x16Mul
+
+Config16x16Mul:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Config16x16Mul ../2x2/Approx2x2Mul.v \
+		../4x4/Config4x4Mul.v ../8x8/Config8x8Mul.v ../../ADD/OneBit/ApproxAddOneBit.v ../../ADD/Config/ConfigAddMultiBit.v \
+		../../ADD/OneBit/AccurateAddOneBit.v Config16x16Mul.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=0
+	vvp Config16x16Mul
+
+#-------------------------------------------------------
+#
+# Simulate Verilog designs
+#
+#.PHONY: test
+#test:	
+#	iverilog \
+#		-l $(YOSYS_SIMCELLS) \
+#		-o test Approx8x8Mul.v $(TESTBENCH)
+#	vvp test
+#
+#-------------------------------------------------------
+#
+# Clean directory
+#
+.PHONY: clean
+clean:  
+	rm -rf test *.vcd Accurate16x16Mul Approx16x16MulV1 Approx16x16MulV2 Approx16x16MulV3 Approx16x16MulV4 Approx16x16MulV5 Config16x16Mul

@@ -16,17 +16,17 @@ WIDTH_ADD ?= 10
 N_ADD ?= 0
 #
 # Multiplier accuracy parameters
-N16 = 16
-N8 = 8
-N4 = 4
+N16 ?= 16
+N8 ?= 8
+N4 ?= 4
 #
 # Paths
-ADD1_PATH = ../ADD/OneBit/tv_approx.tv
+ADD1_PATH ?= ../ADD/OneBit/tv_approx.tv
 ADDN_PATH ?= ../ADD/Config/tv_config.tv
-MUL2_PATH = ../MUL/2x2/tv_approx.tv
-MUL4_PATH = ../MUL/4x4/tv_config.tv
-MUL8_PATH = ../MUL/8x8/tv_config.tv
-MUL16_PATH = ../MUL/16x16/tv_config.tv
+MUL2_PATH ?= ../MUL/2x2/tv_approx.tv
+MUL4_PATH ?= ../MUL/4x4/tv_config.tv
+MUL8_PATH ?= ../MUL/8x8/tv_config.tv
+MUL16_PATH ?= ../MUL/16x16/tv_config.tv
 #
 #------------------------------------------------------------------------------
 #

@@ -1,131 +1,200 @@
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
+#
 # Internal variables
 #
-TESTBENCH ?= testbench.v # Change name when decided
-#SBY_FILE ?= 8x8Mul.sby # If we want to use sby
+TESTBENCH ?= testbench.v
+TEST_VECTORS ?= tv_config.tv
+MUL16_PATH ?= ../MUL/16x16/$(TEST_VECTORS)
 #
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
 #
 # Simulation cell library
 #
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
-#-------------------------------------------------------
-# TODO
+#------------------------------------------------------------------------------
+# 
 # Variables
 #
-#VCD_FILES := $(patsubst t)
+# Multiplier accuracies
+N16 ?= 16
+N8 ?= 8
+N4 ?= 4
 #
-#-------------------------------------------------------
-# TODO
-.PHONY: approx1 approx2 accurate
+# Set the environment varialbes to generate the correct test vectors
+export N16
+export N8
+export N4
+export TEST_VECTORS
+export MUL16_PATH
 #
-approx1: Approx16x16MulV1
+# Define source directories
+SRC_DIRS := . ../2x2/ ../4x4 ../8x8 ../../ADD/
+SIM_DIR := ./sim
+SYNTH_DIR := ./synth
 #
-approx2: Approx16x16MulV2
+# Define internal variable for the different sources
+SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name '*testbench.v' \
+		-and -not -name '$(TESTBENCH)')
 #
-approx3: Approx16x16MulV3
+# Define the suffixes used in this Makefile
+.SUFFIXES:
+.SUFFIXES: .v .iverilog .vcd .tv
 #
-approx4: Approx16x16MulV4
+#------------------------------------------------------------------------------
 #
-approx5: Approx16x16MulV5
+# Help target
 #
-accurate: Accurate16x16Mul
+.PHONY: help
+help:
+	@echo ""
+	@echo "Options"
+	@echo "-------"
+	@echo ""
+	@echo "Options can be set from the command line, and directly in the"
+	@echo "Makefile. Please note that it may be necessary to call"
+	@echo ""
+	@echo "    make clean"
+	@echo ""
+	@echo "for options to take effect when execting targets."
+	@echo ""
+	@echo ""
+	@echo "When calling 'make' from the command line, options can be permanently"
+	@echo "set for a session by exporting an environment variable:"
+	@echo ""
+	@echo "    export OPTION=value"
+	@echo "    make target_1"
+	@echo "    make target_2"
+	@echo "    ..."
+	@echo "    make target_n"
+	@echo ""
+	@echo "For a single run of 'make', the environment variable can be set as"
+	@echo "follows:"
+	@echo ""
+	@echo "    OPTION=value make target_1"
+	@echo ""
+	@echo "To make the value of an option independent from the command line, it"
+	@echo "can be set in the Makefile, e.g.:"
+	@echo ""
+	@echo "    OPTION ?= value"
+	@echo ""
+	@echo ""
+	@echo "N16=<int>"
+	@echo "    Specifies the number of appox. bits of the adders in the 16-Bit approx. multiplier."
+	@echo ""
+	@echo "N8=<int>"
+	@echo "    Specifies the number of appox. bits of the adders in the 8-Bit approx. multiplier."
+	@echo ""
+	@echo "N4=<int>"
+	@echo "    Specifies the number of appox. bits of the adders in the 4-Bit approx. multiplier."
+	@echo ""
+	@echo "TESTBENCH=<filename>"
+	@echo "    Specifies the testbench to use for verifying the configurable 16-Bit multiplier."
+	@echo ""
+	@echo "TESTVECTOR=<int>"
+	@echo "    Specifies the name of the testvector file."
+	@echo ""
+	@echo "MUL16_PATH=<path/to/file>"
+	@echo "    Specifies the path form the REF to the 16x16 directory."
+	@echo ""
+	@echo ""
+	@echo "Targets"
+	@echo "-------"
+	@echo ""
+	@echo "make tv"
+	@echo "    Generate the testvector file."
+	@echo ""
+	@echo "make sim"
+	@echo "    Simulate the configurable 16-Bit multiplier."
+	@echo ""
+	@echo "make synth"
+	@echo "    Synthesize the configurable 16-Bit multiplier with the current parameters."
+	@echo ""
+	@echo "make sim-synth"
+	@echo "    Simulate the synthesizedconfigurable 16-Bit multiplier."
+	@echo ""
+	@echo "make clean"
+	@echo "    Delete generated files"
+	@echo ""
 #
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
 #
-Approx16x16MulV1:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx16x16MulV1 ../2x2/Approx2x2Mul.v \
-		../4x4/Approx4x4MulV1.v \
-		../8x8/Approx8x8MulV1.v \
-		Approx16x16MulV1.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=1
-	vvp Approx16x16MulV1
-
-Approx16x16MulV2:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx16x16MulV2 ../2x2/Approx2x2Mul.v \
-		../4x4/Approx4x4MulV2.v \
-		../8x8/Approx8x8MulV2.v \
-		../../ADD/OneBit/ApproxAddOneBit.v \
-		../../ADD/MultiBit/ApproxAddMultiBit.v \
-		Approx16x16MulV2.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=2
-	vvp Approx16x16MulV2
-
-Approx16x16MulV3:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx16x16MulV3 ../2x2/Approx2x2Mul.v \
-		../4x4/Approx4x4MulV1.v \
-		../8x8/Approx8x8MulV3.v \
-		../../ADD/OneBit/ApproxAddOneBit.v \
-		../../ADD/MultiBit/ApproxAddMultiBit.v \
-		Approx16x16MulV3.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=3
-	vvp Approx16x16MulV3
-
-Approx16x16MulV4:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx16x16MulV4 ../2x2/Approx2x2Mul.v \
-		../4x4/Approx4x4MulV1.v \
-		../8x8/Approx8x8MulV1.v \
-		../../ADD/OneBit/ApproxAddOneBit.v \
-		../../ADD/MultiBit/ApproxAddMultiBit.v \
-		Approx16x16MulV4.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=4
-	vvp Approx16x16MulV4
-
-Approx16x16MulV5:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx16x16MulV5 ../2x2/Approx2x2Mul.v \
-		../4x4/Approx4x4MulV2.v \
-		../8x8/Approx8x8MulV2.v \
-		../2x2/Accurate2x2Mul.v \
-		../4x4/Accurate4x4Mul.v \
-		../8x8/Accurate8x8Mul.v \
-		../../ADD/OneBit/ApproxAddOneBit.v \
-		../../ADD/MultiBit/ApproxAddMultiBit.v \
-		Approx16x16MulV5.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=5
-	vvp Approx16x16MulV5
-
-Accurate16x16Mul:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Accurate16x16Mul ../2x2/Accurate2x2Mul.v \
-		../4x4/Accurate4x4Mul.v \
-		../8x8/Accurate8x8Mul.v \
-		Accurate16x16Mul.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=0
-	vvp Accurate16x16Mul
-
+# Define target for the test vector generation
+#
+.PHONY: tv
+tv: $(TEST_VECTORS)
+#
+# Define target for simulation
+#
+.PHONY: sim
+sim: 
+	@$(MAKE) $(SIM_DIR)/Config16x16Mul.vcd MODE=0
+#
+# Define target for synthesis
+#
+.PHONY: synth
+synth: $(SYNTH_DIR)/Config16x16Mul.v
+#
+# Define target for simulation of the synthesized module
+#
+.PHONY: sim-synth
+sim-synth: 
+	@$(MAKE) $(SIM_DIR)/Config16x16Mul_synth.vcd MODE=1
+#
+#------------------------------------------------------------------------------
+#
+# Generate the testvector file
+#
+$(TEST_VECTORS):
+	cd ../../REF/ && make mul16 && make clean
+#
 #-------------------------------------------------------
 #
 # Simulate Verilog designs
 #
-#.PHONY: test
-#test:	
-#	iverilog \
-#		-l $(YOSYS_SIMCELLS) \
-#		-o test Approx8x8Mul.v $(TESTBENCH)
-#	vvp test
+$(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH) $(TEST_VECTORS)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*.iverilog \
+		$(SRCS) $(TESTBENCH) \
+		-D TEST_MODE=$(MODE) \
+		-D 'VCD_FILE="$@"' \
+		-D 'N16=$(N16)' \
+		-D 'N8=$(N8)' \
+		-D 'N4=$(N4)' \
+		-D 'TEST_VECTORS="$(TEST_VECTORS)"'
+	vvp $(SIM_DIR)/$*.iverilog
 #
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
+#
+# Synthesize Verilog designs
+#
+$(SYNTH_DIR)/%.v: %.tcl
+	mkdir -p $(dir $@)
+	yosys $^
+#
+#------------------------------------------------------------------------------
+#
+# Simulate the synthesized Verilog designs
+#
+$(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH) $(TEST_VECTORS)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*_synth.iverilog \
+		$(SYNTH_DIR)/$*.v $(TESTBENCH) \
+		-D TEST_MODE=$(MODE) \
+		-D 'VCD_FILE="$@"' \ 
+		-D 'TEST_VECTORS="$(TESTVECTOR)"'
+	vvp $(SIM_DIR)/$*_synth.iverilog
+#
+#------------------------------------------------------------------------------
 #
 # Clean directory
 #
 .PHONY: clean
 clean: 
-	rm -rf test *.vcd Accurate16x16Mul Approx16x16MulV1 Approx16x16MulV2 Approx16x16MulV3 Approx16x16MulV4 Approx16x16MulV5
+	rm -rf *.iverilog *.vcd sim synth $(TEST_VECTORS)
+#
+#------------------------------------------------------------------------------

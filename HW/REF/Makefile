@@ -9,20 +9,20 @@ PYTHON ?= python3
 # Variables
 #
 # Number of testvectors for the random tests
-TV_NUM = 10
+TV_NUM = 100
 #
 # Adder width and accuracy
-WIDTH_ADD = 8
-N_ADD = 4
+WIDTH_ADD ?= 10
+N_ADD ?= 0
 #
 # Multiplier accuracy parameters
-N16 = 8
-N8 = 4
-N4 = 2
+N16 = 16
+N8 = 8
+N4 = 4
 #
 # Paths
 ADD1_PATH = ../ADD/OneBit/tv_approx.tv
-ADDN_PATH = ../ADD/Config/tv_config.tv
+ADDN_PATH ?= ../ADD/Config/tv_config.tv
 MUL2_PATH = ../MUL/2x2/tv_approx.tv
 MUL4_PATH = ../MUL/4x4/tv_config.tv
 MUL8_PATH = ../MUL/8x8/tv_config.tv

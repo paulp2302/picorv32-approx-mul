@@ -182,8 +182,8 @@ $(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH) $(TEST_VECTORS)
 		-o $(SIM_DIR)/$*_synth.iverilog \
 		$(SYNTH_DIR)/$*.v $(TESTBENCH) \
 		-D TEST_MODE=$(MODE) \
-		-D 'VCD_FILE="$@"' \ 
-		-D 'TEST_VECTORS="$(TESTVECTOR)"'
+		-D 'VCD_FILE="$@"' \
+		-D 'TEST_VECTORS="$(TEST_VECTORS)"'
 	vvp $(SIM_DIR)/$*_synth.iverilog
 #
 #------------------------------------------------------------------------------

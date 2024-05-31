@@ -1,4 +1,4 @@
-// Universal testbench for the 2x2 multipliers 
+// Universal testbench for the 16x16 multipliers 
 
 `timescale 100ps/10ps // Unit of time is 100ps
 
@@ -6,11 +6,16 @@
 `define TEST_MODE 0
 `endif 
 
-`define ACC_TEST_VECTORS "tv_config.tv"
-`define APPROX_TEST_VECTORS "tv_approx.tv"
+`ifndef TEST_VECTORS
+`define TEST_VECTORS "tv_config.tv"
+`endif 
 
 `ifndef VCD_FILE
 `define VCD_FILE "mul4x4.vcd"
+`endif
+
+`ifndef N4
+`define N4 0
 `endif
 
 module mul4x4_tb;
@@ -23,16 +28,14 @@ module mul4x4_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[15:0] testvectors[0:9];      // array of testvectors
+    reg[15:0] testvectors[0:99];      // array of testvectors
 
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
-        Config4x4Mul #(.N4(3)) mul(.a(a), .b(b), .out(out));
+        Config4x4Mul #(.N4(`N4)) mul(.a(a), .b(b), .out(out)); 
     else if (`TEST_MODE == 1)
-        Approx4x4MulV1 mul(.a(a), .b(b), .out(out));
-    else 
-        Approx4x4MulV2 mul(.a(a), .b(b), .out(out));
-
+        Config4x4Mul mul(.a(a), .b(b), .out(out));
+    
     // Generate clock
     always // no sensitivity list
         begin
@@ -43,10 +46,7 @@ module mul4x4_tb;
     initial begin
         $dumpfile(`VCD_FILE); // File with simulation resuls
         $dumpvars(0, mul4x4_tb); // Select which variables are written to file 
-        if (`TEST_MODE == 0)
-            $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors
-        else
-            $readmemb(`APPROX_TEST_VECTORS, testvectors); // Readvectors
+        $readmemb(`TEST_VECTORS, testvectors); // Readvectors
         vectornum = 0; errors = 0; // Initialize
         reset = 1;
         #27; reset = 0; // Apply reset wait

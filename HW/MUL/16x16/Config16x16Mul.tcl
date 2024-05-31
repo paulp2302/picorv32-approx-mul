@@ -31,7 +31,9 @@ hierarchy -check -auto-top
 procs
 clean
 opt
+flatten
 clean
+stat
 
 # Fine level synthesis
 opt -full

@@ -74,6 +74,16 @@ Accurate8x8Mul:
 		-D TEST_MODE=0
 	vvp Accurate8x8Mul
 
+Config8x8Mul:	
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o Config8x8Mul ../2x2/Approx2x2Mul.v \
+		../4x4/Config4x4Mul.v ../../ADD/OneBit/ApproxAddOneBit.v ../../ADD/Config/ConfigAddMultiBit.v \
+		../../ADD/OneBit/AccurateAddOneBit.v Config8x8Mul.v \
+		$(TESTBENCH) \
+		-D TEST_MODE=0
+	vvp Config8x8Mul
+
 #-------------------------------------------------------
 #
 # Simulate Verilog designs
@@ -91,4 +101,4 @@ Accurate8x8Mul:
 #
 .PHONY: clean
 clean: 
-	rm -rf test *.vcd Accurate8x8Mul Approx8x8MulV1 Approx8x8MulV2 Approx8x8MulV3
+	rm -rf test *.vcd Accurate8x8Mul Approx8x8MulV1 Approx8x8MulV2 Approx8x8MulV3 Config8x8Mul

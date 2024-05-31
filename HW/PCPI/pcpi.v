@@ -4,10 +4,10 @@ module pcpi(
     input [31:0] pcpi_rs1, pcpi_rs2,
     output reg pcpi_wr,
     output reg [31:0] pcpi_rd,
-    output reg pcpi_wait, pcpi_ready,
+    output reg pcpi_wait, pcpi_ready
 );
 
-Config16x16Mul multiplier(.a (a), .b (a), .out (mul_out));
+Config16x16Mul multiplier (.a (a), .b (a), .out (mul_out));
 
 parameter SIZE = 4;
 parameter MUL16 = 7'b0101011;
@@ -23,7 +23,7 @@ assign opcode = pcpi_insn[6:0];
 
 // Declarations for MUL module
 wire [31:0] mul_out;
-//wire mul_start, mul_finish; // Keep this if we don't make STA
+wire mul_start, mul_finish; // Keep this if we don't make STA
 //reg[15:0] prev_rs1, prev_rs2, prev_out;
 
 // Temporarly assignments, until Mul module is done

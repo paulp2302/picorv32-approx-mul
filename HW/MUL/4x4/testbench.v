@@ -6,7 +6,7 @@
 `define TEST_MODE 0
 `endif 
 
-`define ACC_TEST_VECTORS "tv_accurate.tv"
+`define ACC_TEST_VECTORS "tv_config.tv"
 `define APPROX_TEST_VECTORS "tv_approx.tv"
 
 `ifndef VCD_FILE
@@ -23,11 +23,11 @@ module mul4x4_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[15:0] testvectors[0:3];      // array of testvectors
+    reg[15:0] testvectors[0:9];      // array of testvectors
 
     // Instantiate the design under test:
     if (`TEST_MODE == 0)
-        Accurate4x4Mul mul(.a(a), .b(b), .out(out));
+        Config4x4Mul #(.N4(3)) mul(.a(a), .b(b), .out(out));
     else if (`TEST_MODE == 1)
         Approx4x4MulV1 mul(.a(a), .b(b), .out(out));
     else 

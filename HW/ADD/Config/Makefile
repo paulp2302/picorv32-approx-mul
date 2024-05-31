@@ -2,8 +2,8 @@
 # Internal variables
 #
 TESTBENCH ?= testbench.v
-TEST_VECTORS ?= tv_conf.tv
-ADDN_PATH ?= ../ADD/Config/$(TESTVECTOR)
+TEST_VECTORS ?= tv_config.tv
+ADDN_PATH ?= ../ADD/Config/$(TEST_VECTORS)
 #
 #------------------------------------------------------------------------------
 #
@@ -16,8 +16,8 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 # Variables
 #
 # Default values for width and accuracy
-WIDTH_ADD ?= 8
-N_ADD ?= 4
+WIDTH_ADD ?= 32
+N_ADD ?= 13
 #
 # Set environment variables for the testvector generations
 export WIDTH_ADD
@@ -35,7 +35,7 @@ SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name '*testbench.v' \
 #
 # Define the suffixes used in this Makefile
 .SUFFIXES:
-.SUFFIXES: .v .iverilog .vcd
+.SUFFIXES: .v .iverilog .vcd .tv
 #
 #------------------------------------------------------------------------------
 #
@@ -109,7 +109,7 @@ help:
 # Define target for the test vector generation
 #
 .PHONY: tv
-tv: $(TESTVECTOR)
+tv: $(TEST_VECTORS)
 #
 # Define target for simulation
 #
@@ -121,14 +121,14 @@ sim:
 #
 # Generate the testvector file
 #
-$(TESTVECTOR):
+$(TEST_VECTORS):
 	cd ../../REF/ && make addN && make clean
 #
 #------------------------------------------------------------------------------
 #
 # Simulate Verilog designs
 #
-$(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH) $(TESTVECTOR)
+$(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH) $(TEST_VECTORS)
 	mkdir -p $(dir $@)
 	iverilog \
 		-g2012 \
@@ -138,7 +138,7 @@ $(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH) $(TESTVECTOR)
 		-D 'VCD_FILE="$@"' \
 		-D 'WIDTH_ADD=$(WIDTH_ADD)' \
 		-D 'N_ADD=$(N_ADD)' \
-		-D 'TEST_VECTORS="$(TESTVECTOR)"'
+		-D 'TEST_VECTORS="$(TEST_VECTORS)"'
 	vvp $(SIM_DIR)/$*.iverilog
 #
 #------------------------------------------------------------------------------

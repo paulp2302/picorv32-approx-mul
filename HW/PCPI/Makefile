@@ -187,11 +187,17 @@ $(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH) $(TEST_VECTORS)
 	vvp $(SIM_DIR)/$*_synth.iverilog
 #
 #------------------------------------------------------------------------------
+# Hardcoded for now
+.PHONY: sta
+sta:
+	nextpnr-ice40 --up5k --package sg48 --json synth/pcpi.json --pcf constraint.pcf --write top.pnr --asc top.asc
+	icetime -p constraint.pcf -d up5k -P sg48 top.asc
+#
 #
 # Clean directory
 #
 .PHONY: clean
 clean: 
-	rm -rf *.iverilog *.vcd sim synth 
+	rm -rf *.iverilog *.vcd sim synth *.asc *.pnr
 #
 #------------------------------------------------------------------------------

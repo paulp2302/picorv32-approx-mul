@@ -16,8 +16,7 @@ module ConfigAddMultiBit (A, B, Sum);
     assign c_internal[0] = 0;
 
     // Calculate the accurate part of the addition
-    assign accurateRes[bitWidth-1:approxWidth] = A[bitWidth-1:approxWidth] + B[bitWidth-1:approxWidth];
-    assign accurateRes[approxWidth-1:0] = 0;
+    assign accurateRes = ((A >> approxWidth) + (B >> approxWidth)) << approxWidth;
 
     // Calculate the total sum from the accurate and appoximate result
     // The overflow of the approximate adder C_out also needs to be considered

@@ -58,11 +58,13 @@ always @ (state) begin
       begin
                 a <= pcpi_rs1[15:0];
                 b <= pcpi_rs2[15:0];
-                pcpi_wr <= 1;
-                pcpi_ready <= 1;
+                
                 
       end 
     else if (state == DONE)
+        begin
+            pcpi_wr <= 1; 
+                pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
         pcpi_rd <= res;
 end
 

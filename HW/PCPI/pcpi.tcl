@@ -16,24 +16,23 @@ if {[info exists ::env(N4)]} {
     set N4 $::env(N4)
 }
 
-read_verilog ../ADD/OneBit/AccurateAddOneBit.v
 read_verilog ../ADD/OneBit/ApproxAddOneBit.v
 read_verilog -pwires ../ADD/Config/ConfigAddMultiBit.v
 read_verilog ../MUL/2x2/Approx2x2Mul.v
 read_verilog -pwires ../MUL/4x4/Config4x4Mul.v
 read_verilog -pwires ../MUL/8x8/Config8x8Mul.v
-read_verilog -pwires ../MUL/16x16/Config16x16Mul.v
+read_verilog ../MUL/16x16/Config16x16Mul.v
 read_verilog pcpi.v
 read_verilog top.v
 
 chparam -set N16 $N16 -set N8 $N8 -set N4 $N4 Config16x16Mul
 
 # High level synthesis processes
-hierarchy -check -auto-top
+hierarchy -top top
 procs
 clean
 opt
-flatten
+flatten Config16x16Mul
 clean
 stat
 
@@ -43,6 +42,6 @@ clean
 stat
 
 # Write the syntesized multiplier to file
-synth_ice40
+#synth_ice40
 write_verilog synth/pcpi.v
-write_json synth/pcpi.json
+#write_json synth/pcpi.json

@@ -3,8 +3,8 @@
 // uses: Approx4x4MulV1.v and ApproxAddMultiBit.v
 
 module Config8x8Mul(a, b, out);
-    parameter N8 = 0;
-    parameter N4 = 0;
+    parameter [4:0] N8 = 0;
+    parameter [3:0] N4 = 0;
 
     input wire[7:0] a, b;
     output wire[15:0] out;

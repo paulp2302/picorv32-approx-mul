@@ -2,11 +2,12 @@
 // Implementation of a multiplier tree to approximate a 16x16 multiplication 
 // uses: Approx8x8MulV1.v
 
-module Config16x16Mul(a, b, out);
-    parameter N16 = 0;
-    parameter N8 = 0;
-    parameter N4 = 0;
 
+module Config16x16Mul (a, b, out);
+	parameter [5:0] N16 = 0;
+    parameter [4:0] N8 = 0;
+    parameter [3:0] N4 = 0;
+	
     input wire[15:0] a, b;
     output wire[31:0] out;
 

@@ -3,7 +3,7 @@
 // uses: Accurate2x2Mul.v
 
 module Config4x4Mul(a, b, out);
-    parameter N4 = 0;
+    parameter [3:0] N4 = 0;
 
     input wire[3:0] a, b;
     output wire[7:0] out;

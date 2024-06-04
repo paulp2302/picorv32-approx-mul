@@ -14,7 +14,7 @@ size: main.elf
 	$(TOOLCHAIN_PREFIX)size main.elf
 
 main.elf: main.c
-	$(TOOLCHAIN_PREFIX)gcc $(CFLAGS) -o $@ $<
+	$(TOOLCHAIN_PREFIX)gcc $(CFLAGS) -o $@ $< custom_inst.c
 	chmod -x $@
 
 main.hex: main.elf

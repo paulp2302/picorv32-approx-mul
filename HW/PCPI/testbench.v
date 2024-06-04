@@ -6,7 +6,7 @@
 `define VCD_FILE "pcpi.vcd"
 `endif
 
-module pcpi_tb;
+module top_tb;
 
     
     // Input of DuT
@@ -16,7 +16,6 @@ module pcpi_tb;
      // Output of DuT
     wire [31:0] pcpi_rd;
     wire pcpi_wait, pcpi_ready, pcpi_wr;
-    wire [3:0] state;
     reg [31:0] out_exp;
 
     reg[31:0] vectornum, errors;    // bookkeeping variables
@@ -26,7 +25,7 @@ module pcpi_tb;
 
     // Instantiate the design under test:
     
-    pcpi pcpi_dut(.clk(clk),
+    top        dut(.clk(clk),
                   .resetn(resetn),
                   .pcpi_valid(pcpi_valid),
                   .pcpi_insn(pcpi_insn),
@@ -48,16 +47,16 @@ module pcpi_tb;
     
     initial begin
         $dumpfile(`VCD_FILE); // File with simulation resuls
-        $dumpvars(0, pcpi_tb); // Select which variables are written to file 
+        $dumpvars(0, top_tb); // Select which variables are written to file 
         $readmemb(`TEST_VECTORS, testvectors); // Readvectors
         vectornum = 0; errors = 0; // Initialize
         resetn = 1;
-        #50; resetn = 0; // Apply reset wait
+       // #50; resetn = 0; // Apply reset wait
     end
 
     initial begin
         pcpi_valid <= 0;
-        pcpi_insn <= 32'b00000000001000001000000000101011
+        pcpi_insn <= 32'b00000000001000001000000000101011;
         #5; pcpi_valid <= 1;
         #100; $finish;
         
@@ -66,9 +65,16 @@ module pcpi_tb;
     // apply test vectors on rising edge of clk
     always @(posedge clk)
         begin
-            if (read_en)
-            #1; {pcpi_rs1, pcpi_rs2, out_exp} = testvectors[vectornum];
+            if (read_en) 
+            #1; {pcpi_rs1, pcpi_rs2, out_exp} = testvectors[vectornum];  
         end
+
+    always @(posedge clk) begin
+        if (read_en) begin
+        pcpi_valid = 1;
+        #10; pcpi_valid = 0;
+        end
+    end
 
     always @(posedge clk) begin
         if(pcpi_ready) begin

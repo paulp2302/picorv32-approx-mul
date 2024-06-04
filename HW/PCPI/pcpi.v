@@ -9,12 +9,14 @@ module pcpi(
     
     // Approx multiplier interface
     input [31:0] res,
-    output reg [16:0] a, b
+    output reg [15:0] a, b
 );
 
-parameter SIZE = 4;
+parameter SIZE = 2;
 parameter MUL16 = 7'b0101011;
-parameter IDLE = 3'b001, DECODE = 3'b010, EXECUTE = 3'b011, DONE = 3'b100;
+// We need an additional state after EXECUTE to be able to retrieve
+// the result from the multiplier
+parameter IDLE = 2'b01, EXECUTE = 2'b10, DONE = 2'b11;
 
 // Internal declarations
 reg [SIZE-1:0] state; 
@@ -22,16 +24,8 @@ reg [SIZE-1:0] next_state;
 //reg [15:0] a,b;
 wire [6:0] opcode;
 
+
 assign opcode = pcpi_insn[6:0];
-
-// Declarations for MUL module
-//wire [31:0] mul_out;
-//wire mul_start, mul_finish; // Keep this if we don't make STA
-//reg[15:0] prev_rs1, prev_rs2, prev_out;
-
-// Temporarly assignments, until Mul module is done
-//assign mul_finish = 1; 
-
 
 // FSM Sequence
 always @ (posedge clk) begin
@@ -43,17 +37,14 @@ end
 
 // Next State Logic
 always @ (state or pcpi_valid) begin
-    next_state = 3'b000;
+    next_state = 2'b00;
     case(state) 
-        IDLE:    if (pcpi_valid)
-                    next_state = DECODE;
-        DECODE:  if (opcode == MUL16)
-                    next_state = DONE;
-        EXECUTE: if (mul_finish)        // Keep this state if we don't pass STA, otherwise remove
-                    next_state = DONE;
-                 else
+        IDLE:    if (pcpi_valid && opcode == MUL16)
                     next_state = EXECUTE;
-        DONE: next_state = IDLE;
+                else
+                    next_state = IDLE;
+        EXECUTE:   next_state = DONE;
+        DONE:     next_state = IDLE;
         default: next_state = IDLE;
     endcase
 end
@@ -63,19 +54,16 @@ always @ (state) begin
     pcpi_wr <= 0;
     pcpi_ready <= 0;
     pcpi_wait <= 0; // Remove this if we make STA, then we can have this set to 0 always
-    case(state)
-        IDLE: pcpi_ready <= 0;  
-        DECODE: begin
+    if (state == EXECUTE)
+      begin
                 a <= pcpi_rs1[15:0];
                 b <= pcpi_rs2[15:0];
-        end
-        EXECUTE,  
-        DONE: begin
                 pcpi_wr <= 1;
                 pcpi_ready <= 1;
-                pcpi_rd <= res;
-        end
-    endcase
+                
+      end 
+    else if (state == DONE)
+        pcpi_rd <= res;
 end
 
 

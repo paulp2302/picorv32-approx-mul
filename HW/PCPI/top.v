@@ -5,22 +5,22 @@ module top(
     input [31:0] pcpi_rs1, pcpi_rs2,
     output reg pcpi_wr,
     output reg [31:0] pcpi_rd,
-    output reg pcpi_wait, pcpi_ready,
-    output reg [31:0] out
+    output reg pcpi_wait, pcpi_ready
 );
 
-//wire [31:0] pcpi_rs1, pcpi_rs2;
-//reg pcpi_valid;
-//wire pcpi_wr, pcpi_wait, pcpi_ready;
-//reg [31:0] pcpi_insn, pcpi_rd;
+// Inputs and outputs for the multiplier
 wire [15:0] a, b;
 wire [31:0] product;
 
-//assign pcpi_rs1[15:0] = a;
-//assign pcpi_rs2[15:0] = b;
+// Internal wires for outputs
+wire wr, p_wait, ready;
+wire [31:0] rd;
 
 always @ (posedge clk) begin
-        out <= pcpi_rd[31:0];
+        pcpi_rd <= rd;
+        pcpi_wr <= wr;
+        pcpi_wait <= p_wait;
+        pcpi_ready <= ready;
 end
 
 Config16x16Mul mul(
@@ -33,11 +33,11 @@ pcpi dut(.clk(clk),
         .pcpi_valid(pcpi_valid),
         .pcpi_insn(pcpi_insn),
         .pcpi_rs1(pcpi_rs1),
-        .pcpi_rs1(pcpi_rs2),
-        .pcpi_wr(pcpi_wr),
-        .pcpi_rd(pcpi_rd),
-        .pcpi_wait(pcpi_wait),
-        .pcpi_ready(pcpi_ready),
+        .pcpi_rs2(pcpi_rs2),
+        .pcpi_wr(wr),
+        .pcpi_rd(rd),
+        .pcpi_wait(p_wait),
+        .pcpi_ready(ready),
         .a(a),
         .b(b),
         .res(product));

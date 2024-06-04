@@ -1,13 +1,16 @@
 module pcpi(
+    // PCPI Interface
     input clk, resetn, pcpi_valid,
     input [31:0] pcpi_insn,
     input [31:0] pcpi_rs1, pcpi_rs2,
     output reg pcpi_wr,
     output reg [31:0] pcpi_rd,
-    output reg pcpi_wait, pcpi_ready
+    output reg pcpi_wait, pcpi_ready,
+    
+    // Approx multiplier interface
+    input [31:0] res,
+    output reg [16:0] a, b
 );
-
-Config16x16Mul multiplier (.a (a), .b (a), .out (mul_out));
 
 parameter SIZE = 4;
 parameter MUL16 = 7'b0101011;
@@ -16,14 +19,14 @@ parameter IDLE = 3'b001, DECODE = 3'b010, EXECUTE = 3'b011, DONE = 3'b100;
 // Internal declarations
 reg [SIZE-1:0] state; 
 reg [SIZE-1:0] next_state;
-reg [15:0] a,b;
+//reg [15:0] a,b;
 wire [6:0] opcode;
 
 assign opcode = pcpi_insn[6:0];
 
 // Declarations for MUL module
-wire [31:0] mul_out;
-wire mul_start, mul_finish; // Keep this if we don't make STA
+//wire [31:0] mul_out;
+//wire mul_start, mul_finish; // Keep this if we don't make STA
 //reg[15:0] prev_rs1, prev_rs2, prev_out;
 
 // Temporarly assignments, until Mul module is done
@@ -70,7 +73,7 @@ always @ (state) begin
         DONE: begin
                 pcpi_wr <= 1;
                 pcpi_ready <= 1;
-                pcpi_rd <= mul_out;
+                pcpi_rd <= res;
         end
     endcase
 end

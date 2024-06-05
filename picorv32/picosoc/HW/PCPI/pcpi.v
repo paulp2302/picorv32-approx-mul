@@ -29,7 +29,7 @@ assign opcode = pcpi_insn[6:0];
 
 // FSM Sequence
 always @ (posedge clk) begin
-    if (!resetn || !pcpi_valid)
+    if (!resetn)
         state <= IDLE;
     else 
         state <= next_state;
@@ -39,12 +39,12 @@ end
 always @ (state or pcpi_valid) begin
     next_state = 2'b00;
     case(state) 
-        IDLE:    if (pcpi_valid && opcode == MUL16)
+        IDLE:   if (pcpi_valid && opcode == MUL16)
                     next_state = EXECUTE;
                 else
                     next_state = IDLE;
-        EXECUTE:   next_state = DONE;
-        DONE:     next_state = IDLE;
+        EXECUTE: next_state = DONE;
+        DONE:    next_state = IDLE;
         default: next_state = IDLE;
     endcase
 end
@@ -54,19 +54,20 @@ always @ (state) begin
     pcpi_wr <= 0;
     pcpi_ready <= 0;
     pcpi_wait <= 0; // Remove this if we make STA, then we can have this set to 0 always
+    a <= 0;
+    b <= 0;
+    pcpi_rd <= 0;
     if (state == EXECUTE)
-      begin
-                a <= pcpi_rs1[15:0];
-                b <= pcpi_rs2[15:0];
-                
-                
-      end 
+        begin
+            a <= pcpi_rs1[15:0];
+            b <= pcpi_rs2[15:0];         
+        end 
     else if (state == DONE)
         begin
             pcpi_wr <= 1; 
-                pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
-        pcpi_rd <= res;
-end
+            pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
+            pcpi_rd <= res;
+        end
 end
 
 

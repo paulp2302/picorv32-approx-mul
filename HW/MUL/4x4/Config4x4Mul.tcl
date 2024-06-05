@@ -8,24 +8,25 @@ if {[info exists ::env(N4)]} {
     set N4 $::env(N4)
 }
 
+# Read the designs verilog files
 read_verilog ../../ADD/OneBit/AccurateAddOneBit.v
 read_verilog ../../ADD/OneBit/ApproxAddOneBit.v
-read_verilog -pwires ../../ADD/Config/ConfigAddMultiBit.v
+read_verilog ../../ADD/Config/ConfigAddMultiBit.v
 read_verilog ../2x2/Approx2x2Mul.v
 read_verilog Config4x4Mul.v
 
+# Reevaluate the configurable multiplier with the correct parameters
 chparam -set N4 $N4 Config4x4Mul
 
-# High level synthesis processes
-hierarchy -check -auto-top
-procs
-clean
-opt
-clean
-
-# Fine level synthesis
-opt -full
-clean
+# Synthesis
+hierarchy -check -auto-top;;
+opt_expr;;
+procs;;
+opt_expr;;
+flatten;;
+opt_expr;;
+opt_clean;;
+opt;;
 stat
 
 # Write the syntesized multiplier to file

@@ -139,7 +139,7 @@ module picosoc (
 	wire pcpi_valid, pcpi_wr, pcpi_wait, pcpi_ready;
 	wire [31:0] pcpi_insn, pcpi_rs1, pcpi_rs2, pcpi_rd;
 	
-	top custom_mul(.clk(clk),
+	custom_mul custom_mul(.clk(clk),
 					.resetn(resetn),
 					.pcpi_valid(pcpi_valid),
 					.pcpi_insn(pcpi_insn),

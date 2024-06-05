@@ -21,7 +21,7 @@
 #include <stdbool.h>
 
 //#include "../dhrystone/dhry_top.h"
-#include "/home/disney/Documents/LVA_LDIS_2024_Team5/SW/custom_inst.h"
+#include "../../SW/custom_inst.h"
 
 #ifdef ICEBREAKER
 #  define MEM_TOTAL 0x3000

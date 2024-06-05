@@ -4,9 +4,9 @@ RISCV_ISA = i
 CROSS=/opt/riscv32$(RISCV_ISA)/bin/riscv32-unknown-elf-
 CFLAGS= -O3
 
-DHRY_SRCS = dhrystone/dhry.h dhrystone/stdlib.c dhrystone/dhry_2.c dhrystone/dhry_1.c
-MUL_SRC_DIR = /home/disney/Documents/LVA_LDIS_2024_Team5/SW
-#MUL_SRCS = $(shell find $(MUL_SRC_DIR) -name '*.c' -and -not -name 'main.*' -or -name '*.h' )
+#DHRY_SRCS = dhrystone/dhry.h dhrystone/stdlib.c dhrystone/dhry_2.c dhrystone/dhry_1.c
+APPROX_MUL_PATH = ../../HW/custom_mul.v
+MUL_SRC_DIR = ../../SW
 MUL_SRCS = $(MUL_SRC_DIR)/custom_inst.h $(MUL_SRC_DIR)/custom_inst.c
 BRAM_SIZE = 3072
 
@@ -29,10 +29,10 @@ sim: icebreaker_tb.vvp icebreaker_fw.hex icebreaker_fw_bram.hex
 synsim: icebreaker_syn_tb.vvp icebreaker_fw.hex
 	vvp -N $< +firmware=icebreaker_fw.hex
 
-icebreaker.json: icebreaker.v spimemio.v simpleuart.v picosoc.v ice40up5k_spram.v top.v ../picorv32.v icebreaker_fw_random.hex
+icebreaker.json: icebreaker.v spimemio.v simpleuart.v picosoc.v ice40up5k_spram.v $(APPROX_MUL_PATH) ../picorv32.v icebreaker_fw_random.hex
 	yosys -f verilog -v3 -ql icebreaker.log -p 'synth_ice40 -dsp -top icebreaker -json icebreaker.json'  $(filter %.v, $^)
 
-icebreaker_tb.vvp: icebreaker_tb.v icebreaker.v ice40up5k_spram.v spimemio.v simpleuart.v picosoc.v top.v ../picorv32.v spiflash.v
+icebreaker_tb.vvp: icebreaker_tb.v icebreaker.v ice40up5k_spram.v spimemio.v simpleuart.v picosoc.v $(APPROX_MUL_PATH) ../picorv32.v spiflash.v
 	iverilog -v -s testbench -o $@ $^ `yosys-config --datdir/ice40/cells_sim.v` -DNO_ICE40_DEFAULT_ASSIGNMENTS
 
 icebreaker_syn_tb.vvp: icebreaker_tb.v icebreaker_syn.v spiflash.v

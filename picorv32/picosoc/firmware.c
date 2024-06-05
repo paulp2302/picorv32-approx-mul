@@ -500,14 +500,14 @@ void main()
 	
 	while (getchar_prompt("ENTER to continue..\n") != '\r') { /* wait */ }
 		
-	uint8_t test_num = 10;
+	uint8_t test_num = 100;
 	for (uint8_t i = 0; i < test_num; i++)
 	{
-		a = i;
-		b = 2;
+		a = i * 5;
+		b = i * 2;
 		res = a * b;
+		res_approx = mul16(a, b);
 		
-
 		print("A = ");
 		print_dec(a);
 		print("\n");
@@ -517,13 +517,11 @@ void main()
 		print("\n");
 
 		print("Res = ");
-		print_dec(res);
+		print_hex(res, 32);
 		print("\n");
 
-		res_approx = mul16(a, b);
-		
 		print("Res (Approx)= ");
-		print_dec(res_approx);
+		print_hex(res_approx, 32);
 		print("\n\n");
 	}
 	return;

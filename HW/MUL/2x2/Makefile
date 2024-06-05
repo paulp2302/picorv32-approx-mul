@@ -1,62 +1,124 @@
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
+#
 # Internal variables
 #
-TESTBENCH ?= testbench.v # Change name when decided
-#SBY_FILE ?= 2x2Mul.sby # If we want to use sby
+TESTBENCH ?= testbench.v
+TEST_VECTORS_ACC ?= tv_accurate.tv
+TEST_VECTORS_APPROX ?= tv_approx.tv
 #
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
 #
 # Simulation cell library
 #
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
-#-------------------------------------------------------
-# TODO
+#------------------------------------------------------------------------------
+# 
 # Variables
 #
-#VCD_FILES := $(patsubst t)
+# Define sources and output directories
+SRCS := Accurate2x2Mul.v Approx2x2Mul.v
+SIM_DIR := ./sim
 #
-#-------------------------------------------------------
-# TODO
-.PHONY: approx accurate
+# Define the suffixes used in this Makefile
+.SUFFIXES:
+.SUFFIXES: .v .iverilog .vcd .tv
 #
-approx: Approx2x2Mul
+# Define the mode variable used to control the testbench
+MODE = 0
 #
-accurate: Accurate2x2Mul
+#------------------------------------------------------------------------------
 #
-#-------------------------------------------------------
+# Help target
 #
-Approx2x2Mul:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Approx2x2Mul Approx2x2Mul.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=1
-	vvp Approx2x2Mul
-
-Accurate2x2Mul:	
-	iverilog \
-		-l $(YOSYS_SIMCELLS) \
-		-o Accurate2x2Mul Accurate2x2Mul.v \
-		$(TESTBENCH) \
-		-D TEST_MODE=0
-	vvp Accurate2x2Mul
-
-#-------------------------------------------------------
+.PHONY: help
+help:
+	@echo ""
+	@echo "Options"
+	@echo "-------"
+	@echo ""
+	@echo "Options can be set from the command line, and directly in the"
+	@echo "Makefile. Please note that it may be necessary to call"
+	@echo ""
+	@echo "    make clean"
+	@echo ""
+	@echo "for options to take effect when execting targets."
+	@echo ""
+	@echo ""
+	@echo "When calling 'make' from the command line, options can be permanently"
+	@echo "set for a session by exporting an environment variable:"
+	@echo ""
+	@echo "    export OPTION=value"
+	@echo "    make target_1"
+	@echo "    make target_2"
+	@echo "    ..."
+	@echo "    make target_n"
+	@echo ""
+	@echo "For a single run of 'make', the environment variable can be set as"
+	@echo "follows:"
+	@echo ""
+	@echo "    OPTION=value make target_1"
+	@echo ""
+	@echo "To make the value of an option independent from the command line, it"
+	@echo "can be set in the Makefile, e.g.:"
+	@echo ""
+	@echo "    OPTION ?= value"
+	@echo ""
+	@echo ""
+	@echo "TESTBENCH=<filename>"
+	@echo "    Specifies the testbench to use for the 2-Bit multipliers."
+	@echo ""
+	@echo "TEST_VECTOR_ACC=<filename>"
+	@echo "    Specifies the name of the testvector file for the accurate multiplier."
+	@echo ""
+	@echo "TEST_VECTOR_APPROX=<filename>"
+	@echo "    Specifies the name of the testvector file for the approximate multiplier."
+	@echo ""
+	@echo "Targets"
+	@echo "-------"
+	@echo ""
+	@echo "make accurate"
+	@echo "    Simulate the accurate 2-Bit multiplier."
+	@echo ""
+	@echo "make approx"
+	@echo "    Simulate the approximate 2-Bit multiplier."
+	@echo ""
+	@echo "make clean"
+	@echo "    Delete generated files"
+	@echo ""
+#
+#------------------------------------------------------------------------------
+#
+# Define target for simulation of the approximate multiplier
+#
+.PHONY: approx 
+approx: $(SIM_DIR)/Approx2x2Mul.vcd MODE=1
+#
+# Define target for simulation of the accurate multiplier
+#
+.PHONY: accurate
+accurate: $(SIM_DIR)/Accurate2x2Mul.vcd MODE=0
+#
+#------------------------------------------------------------------------------
 #
 # Simulate Verilog designs
 #
-#.PHONY: test
-#test:	
-#	iverilog \
-#		-l $(YOSYS_SIMCELLS) \
-#		-o test Approx2x2Mul.v $(TESTBENCH)
-#	vvp test
+$(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*.iverilog \
+		$^ \
+		-D TEST_MODE=$(MODE) \
+		-D 'VCD_FILE="$@"' \
+		-D 'ACC_TEST_VECTORS="$(TEST_VECTORS_ACC)"' \
+		-D 'APPROX_TEST_VECTORS="$(TEST_VECTORS_APPROX)"'
+	vvp $(SIM_DIR)/$*.iverilog
 #
-#-------------------------------------------------------
+#------------------------------------------------------------------------------
 #
 # Clean directory
 #
 .PHONY: clean
 clean: 
-	rm -rf test %.vcd Accurate2x2Mul Approx2x2Mul
+	rm -rf $(SIM_DIR)

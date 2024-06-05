@@ -6,17 +6,19 @@
 `define TEST_MODE 0
 `endif 
 
+`ifndef ACC_TEST_VECTORS
 `define ACC_TEST_VECTORS "tv_accurate.tv"
+`endif
+
+`ifndef APPROX_TEST_VECTORS
 `define APPROX_TEST_VECTORS "tv_approx.tv"
+`endif
 
 `ifndef VCD_FILE
 `define VCD_FILE "mul2x2.vcd"
 `endif
 
 module mul2x2_tb;
-    //parameter ACC_TEST_VECTORS = "tv_accurate.tv" 
-    //parameter APPROX_TEST_VECTORS = "tv_approx.tv"
-
     reg[1:0] a, b;      // Input of DuT
     wire[3:0] out;       // Output of DuT
     reg[3:0] out_exp;   // Expected response

@@ -54,20 +54,23 @@ always @ (state) begin
     pcpi_wr <= 0;
     pcpi_ready <= 0;
     pcpi_wait <= 0; // Remove this if we make STA, then we can have this set to 0 always
+    a <= 0;
+    b <= 0;
+    pcpi_rd <= 0;
     if (state == EXECUTE)
       begin
-                a <= pcpi_rs1[15:0];
-                b <= pcpi_rs2[15:0];
+            a <= pcpi_rs1[15:0];
+            b <= pcpi_rs2[15:0];
                 
                 
       end 
     else if (state == DONE)
         begin
             pcpi_wr <= 1; 
-                pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
-        pcpi_rd <= res;
+            pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
+            pcpi_rd <= res;
+        end
 end
-
 
 
 endmodule

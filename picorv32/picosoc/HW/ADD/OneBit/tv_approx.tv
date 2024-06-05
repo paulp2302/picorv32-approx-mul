@@ -1,0 +1,12 @@
+// Test vector for ApproxAddOneBit (Team 5 -> ApproxAdd2)
+// Format: A B Cin Sum Cout
+// Sum = (!B) & ((!A) | (!Cin));
+// Cou = !Sum
+000_10
+001_10
+010_01
+011_01
+100_10
+101_01
+110_01
+111_01

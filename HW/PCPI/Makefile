@@ -29,7 +29,7 @@ export TEST_VECTORS
 export MUL16_PATH
 #
 # Define source directories
-SRC_DIRS := . ../MUL/2x2/ ../MUL/4x4 ../MUL/8x8 ../MUL/16x16 ../ADD/
+SRC_DIRS := . ../MUL/ ../ADD/
 SIM_DIR := ./sim
 SYNTH_DIR := ./synth
 #

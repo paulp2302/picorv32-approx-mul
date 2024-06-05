@@ -13,7 +13,8 @@ module pcpi(
 );
 
 parameter SIZE = 2;
-parameter MUL16 = 7'b0101011;
+parameter MUL16 = 7'b0101011;   // opcode of the MUL16 instruction
+
 // We need an additional state after EXECUTE to be able to retrieve
 // the result from the multiplier
 parameter IDLE = 2'b01, EXECUTE = 2'b10, DONE = 2'b11;
@@ -21,7 +22,6 @@ parameter IDLE = 2'b01, EXECUTE = 2'b10, DONE = 2'b11;
 // Internal declarations
 reg [SIZE-1:0] state; 
 reg [SIZE-1:0] next_state;
-//reg [15:0] a,b;
 wire [6:0] opcode;
 
 
@@ -36,41 +36,35 @@ always @ (posedge clk) begin
 end
 
 // Next State Logic
-always @ (state or pcpi_valid) begin
+always @ * begin
     next_state = 2'b00;
     case(state) 
-        IDLE:    if (pcpi_valid && opcode == MUL16)
-                    next_state = EXECUTE;
-                else
-                    next_state = IDLE;
-        EXECUTE:   next_state = DONE;
-        DONE:     next_state = IDLE;
-        default: next_state = IDLE;
+        IDLE:       
+            if (pcpi_valid && opcode == MUL16)
+                next_state = EXECUTE;
+            else
+                next_state = IDLE;
+
+        EXECUTE:    next_state = DONE;
+        DONE:       next_state = IDLE;
+        default:    next_state = IDLE;
     endcase
 end
 
 // Output Logic
-always @ (state) begin
+always @ * begin
     pcpi_wr <= 0;
     pcpi_ready <= 0;
     pcpi_wait <= 0; // Remove this if we make STA, then we can have this set to 0 always
-    a <= 0;
-    b <= 0;
-    pcpi_rd <= 0;
-    if (state == EXECUTE)
-      begin
-            a <= pcpi_rs1[15:0];
-            b <= pcpi_rs2[15:0];
-                
-                
-      end 
-    else if (state == DONE)
+    a <= pcpi_rs1[15:0];
+    b <= pcpi_rs2[15:0];
+    pcpi_rd <= res;
+
+    if (state == DONE)
         begin
             pcpi_wr <= 1; 
             pcpi_ready <= 1; // Fix tb to adapt to these two signals, wrt test_vector
-            pcpi_rd <= res;
         end
 end
-
 
 endmodule

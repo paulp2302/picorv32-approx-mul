@@ -5,6 +5,9 @@ CROSS=/opt/riscv32$(RISCV_ISA)/bin/riscv32-unknown-elf-
 CFLAGS= -O3
 
 DHRY_SRCS = dhrystone/dhry.h dhrystone/stdlib.c dhrystone/dhry_2.c dhrystone/dhry_1.c
+MUL_SRC_DIR = /home/disney/Documents/LVA_LDIS_2024_Team5/SW
+#MUL_SRCS = $(shell find $(MUL_SRC_DIR) -name '*.c' -and -not -name 'main.*' -or -name '*.h' )
+MUL_SRCS = $(MUL_SRC_DIR)/custom_inst.h $(MUL_SRC_DIR)/custom_inst.c
 BRAM_SIZE = 3072
 
 # ---- Firmware analysis ----
@@ -63,8 +66,8 @@ prog_fw: icebreaker_fw.bin
 icebreaker_sections.lds: sections.lds
 	$(CROSS)cpp -P -DICEBREAKER -o $@ $^
 
-icebreaker_fw.elf: icebreaker_sections.lds start.s firmware.c $(DHRY_SRCS)
-	$(CROSS)gcc $(CFLAGS) -DICEBREAKER -DTIME -DRISCV -DUSE_MYSTDLIB -ffreestanding -nostdlib -mabi=ilp32 -march=rv32$(RISCV_ISA) -Wl,-Bstatic,-T,icebreaker_sections.lds,-Map,icebreaker_fw.map,--strip-debug -o icebreaker_fw.elf start.s firmware.c $(DHRY_SRCS) -Wno-implicit-int -Wno-implicit-function-declaration -lgcc
+icebreaker_fw.elf: icebreaker_sections.lds start.s firmware.c $(MUL_SRCS)
+	$(CROSS)gcc $(CFLAGS) -DICEBREAKER -DTIME -DRISCV -DUSE_MYSTDLIB -ffreestanding -nostdlib -mabi=ilp32 -march=rv32$(RISCV_ISA) -Wl,-Bstatic,-T,icebreaker_sections.lds,-Map,icebreaker_fw.map,--strip-debug -o icebreaker_fw.elf start.s firmware.c $(MUL_SRCS) -Wno-implicit-int -Wno-implicit-function-declaration -lgcc
 
 icebreaker_fw.hex: icebreaker_fw.elf
 	$(CROSS)objcopy -O verilog icebreaker_fw.elf icebreaker_fw.hex

@@ -20,7 +20,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../dhrystone/dhry_top.h"
+//#include "../dhrystone/dhry_top.h"
+#include "/home/disney/Documents/LVA_LDIS_2024_Team5/SW/custom_inst.h"
 
 #ifdef ICEBREAKER
 #  define MEM_TOTAL 0x3000
@@ -115,7 +116,7 @@ void print(const char *p)
 		putchar(*(p++));
 }
 
-#if 0
+#if 1
 void print_hex(uint32_t v, int digits)
 {
 	for (int i = 7; i >= 0; i--) {
@@ -486,6 +487,10 @@ void cmd_echo()
 
 void main()
 {
+	uint32_t a = 0;
+	uint32_t b = 0;
+	uint32_t res = 0;
+	uint32_t res_approx = 0;
 	//reg_leds = 31;
 	reg_uart_clkdiv = 104;
 	//print("Booting..\n");
@@ -494,7 +499,32 @@ void main()
 	//set_flash_qspi_flag();
 	
 	while (getchar_prompt("ENTER to continue..\n") != '\r') { /* wait */ }
+		
+	uint8_t test_num = 10;
+	for (uint8_t i = 0; i < test_num; i++)
+	{
+		a = i;
+		b = 2;
+		res = a * b;
+		
 
-	run_dhrystone();
+		print("A = ");
+		print_dec(a);
+		print("\n");
+		
+		print("B = ");
+		print_dec(b);
+		print("\n");
+
+		print("Res = ");
+		print_dec(res);
+		print("\n");
+
+		res_approx = mul16(a, b);
+		
+		print("Res (Approx)= ");
+		print_dec(res_approx);
+		print("\n\n");
+	}
 	return;
 }

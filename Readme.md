@@ -26,17 +26,18 @@ Approximate multiplying provides a valuable approach for improving the efficienc
 
 # Credits
 
+**Students**:
 - Paul Pölzl
 - Samir Hodzic
 - Veronica Kimelman
 
-## Supervisors
+**Supervisors**:
 - Christian Krieg
 - Stefan Bajtala
 
-# PicoRV32
+**PicoRV32**:
 - Yosys ([Link](https://github.com/YosysHQ/picorv32))
 - Modified by Severin ([Link](https://github.com/sevjaeg/picorv32))
 
-## Golden Model
-- Stefan Bajtala ([Link](https://github.com/SteBaj/LDISPython)
+**Golden Model** (Reference):
+- Stefan Bajtala ([Link](https://github.com/SteBaj/LDISPython))

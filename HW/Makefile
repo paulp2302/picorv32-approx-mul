@@ -1,12 +1,5 @@
 #------------------------------------------------------------------------------
 #
-# Internal variables
-#
-TESTBENCH ?= testbench.v
-TEST_VECTORS ?= tv_pcpi.tv
-#
-#------------------------------------------------------------------------------
-#
 # Simulation cell library
 #
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
@@ -85,9 +78,6 @@ help:
 	@echo "N4=<int>"
 	@echo "    Specifies the number of appox. bits of the adders in the 4-Bit approx. multiplier."
 	@echo ""
-	@echo "TESTBENCH=<filename>"
-	@echo "    Specifies the testbench to use for verifying the configurable 16-Bit multiplier."
-	@echo ""
 	@echo ""
 	@echo "Targets"
 	@echo "-------"
@@ -112,7 +102,6 @@ synth: $(SYNTH_DIR)/top.v
 #
 $(SYNTH_DIR)/%.v: %.tcl
 	yosys $^
-
 #
 #------------------------------------------------------------------------------
 #

@@ -87,7 +87,7 @@ help:
 	@echo "TESTBENCH=<filename>"
 	@echo "    Specifies the testbench to use for verifying the configurable 16-Bit multiplier."
 	@echo ""
-	@echo "TESTVECTOR=<int>"
+	@echo "TESTVECTOR=<filename>"
 	@echo "    Specifies the name of the testvector file."
 	@echo ""
 	@echo "MUL16_PATH=<path/to/file>"
@@ -189,6 +189,6 @@ $(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH) $(TEST_VECTORS)
 #
 .PHONY: clean
 clean: 
-	rm -rf *.iverilog *.vcd sim synth $(TEST_VECTORS)
+	rm -rf *.iverilog *.vcd $(SIM_DIR) $(SYNTH_DIR) $(TEST_VECTORS)
 #
 #------------------------------------------------------------------------------

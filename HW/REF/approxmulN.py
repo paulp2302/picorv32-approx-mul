@@ -40,7 +40,7 @@ if len(argv) == 7:
 
 N_ = {16: n16, 8: n8, 4: n4}
 
-def approxmulN(a:int, b:int, N:int):
+def approxmulN(a:int, b:int, N:int, N_: dict):
     if N % 2 != 0:
         raise ValueError("N is odd, this shouldn't happen")
     if a.bit_length()>N or b.bit_length()>N:
@@ -53,16 +53,16 @@ def approxmulN(a:int, b:int, N:int):
         
         return approxmul2(a0, a1, b0, b1)
     
-    HH = approxmulN(a1, b1, int(N/2))
+    HH = approxmulN(a1, b1, int(N/2), N_)
     HH = HH << int(N)
 
-    HL = approxmulN(a1, b0, int(N/2))
+    HL = approxmulN(a1, b0, int(N/2), N_)
     HL = HL << int(N/2)
 
-    LH = approxmulN(a0, b1, int(N/2))
+    LH = approxmulN(a0, b1, int(N/2), N_)
     LH = LH << int(N/2)
 
-    LL = approxmulN(a0, b0, int(N/2))
+    LL = approxmulN(a0, b0, int(N/2), N_)
     LL = LL
 
     LL_LH = limitlen(approxaddN(LL, LH, N_[N]), 2*N)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
         # Calculate the result and write the data to the output file
         for i in range(test_vec_size):
-            result = approxmulN(in1[i], in2[i], width)
+            result = approxmulN(in1[i], in2[i], width, N_)
             data = f'{in1[i]:0{width}b}_{in2[i]:0{width}b}_{result:0{2*width}b}\n'
             file.write(data)
 

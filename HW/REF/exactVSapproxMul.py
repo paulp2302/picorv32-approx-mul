@@ -3,6 +3,8 @@ from sys import argv
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+import matplotlib.transforms as mtransforms
 
 from helperfunctions import *
 from approxadd1 import *
@@ -10,10 +12,12 @@ from approxaddN import *
 from approxmul2 import *
 from approxmulN import *
 
-test_vec_size = 100000
+plot_scatter = False
+
+test_vec_size = 10000
 width = 16 # 2 4 8 16
 n16 = 16
-n8 = 8
+n8 = 0
 n4 = 0
 
 if len(argv) == 6:
@@ -26,45 +30,50 @@ if len(argv) == 6:
 
 N_ = {16: n16, 8: n8, 4: n4}
 
-def calculate_relative_error(approx_result, exact_result):
-    if (exact_result == 0):
-        #return abs(approx_result)
-        return 0
-    return abs(approx_result - exact_result) / exact_result
-
 def exactVSapproxMul():
     in1, in2 = generate_input_vectors(test_vec_size, width)
+    approx_result = np.zeros(test_vec_size)
     errors = np.zeros(test_vec_size)
-
-    in1 = np.array(in1, dtype=int)
-    in2 = np.array(in2, dtype=int)
-
+    
+    in1 = np.array(in1, dtype=np.uint32)
+    in2 = np.array(in2, dtype=np.uint32)
 
     for i in range(test_vec_size):
         # approximate multiplication
-        approx_result = approxmulN(int(in1[i]), int(in2[i]), width, N_)
-        
-        # exact multiplication
-        exact_result = in1[i] * in2[i]
-        
-        # relative error
-        error = calculate_relative_error(approx_result, exact_result)
-        errors[i] = error
+        approx_result[i] = approxmulN(int(in1[i]), int(in2[i]), width, N_)
     
+    # Exact unsigned multiplication
     exact_result = in1 * in2
 
-    # average relative error
-    #print(errors)
-    #plt.plot(errors)
-    #plt.scatter(in1*in2, errors)
-    #plt.show()
-    #print(np.sum(errors))
+    # Calculate the relative error (prevent divide by zero)
+    errors = np.abs(approx_result - exact_result)
+    zero_idx = np.argwhere(exact_result == 0)
+    errors[zero_idx] = 0
+    exact_result[zero_idx] = 1
+    errors/= exact_result
+
+    # Calculate metrics
     avg_error = np.mean(errors)
     median_error = np.median(errors)
     max_error = np.max(errors)
-    print(f'Average relative error for N={width} is {avg_error * 100}%')
-    print(f'Median relative error for N={width} is {median_error * 100}%')
-    print(f'Max relative error for N={width} is {max_error * 100}%')
+
+    # Print the metrics over the testset
+    print(f'Metrics for {test_vec_size} random testvectors run on {width}-bit multiplier with N16={n16}, N8={n8}, N4={n4}')
+    print(f'Average relative error: {avg_error: >15.3%}')
+    print(f'Median relative error:  {median_error: >15.3%}')
+    print(f'Max relative error:     {max_error: >15.3%}')
+
+    # Scatter plot between expected and approximated results
+    if(plot_scatter):
+        fig, ax = plt.subplots()
+        line = mlines.Line2D([0,1], [0,1], color="red")
+        plt.xlabel("Expected result")
+        plt.ylabel("Errors")
+        ax.scatter(exact_result, approx_result)
+        transform = ax.transAxes
+        line.set_transform(transform)
+        ax.add_line(line)
+        plt.show()
 
 if __name__ == "__main__":
     exactVSapproxMul()

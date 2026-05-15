@@ -43,9 +43,10 @@ make synth N16=8 N8=4 N4=2
 ```
 
 ### `make pnr` (Out-of-Context Benchmarking)
-Provides true, isolated hardware metrics (LUT consumption and $F_{max}$) for the multiplier tree without the PicoRV32 CPU acting as a routing bottleneck.Bash# Benchmark the hardware footprint of the exact multiplier
+Provides true, isolated hardware metrics (LUT consumption and $F_{max}$) for the multiplier tree without the PicoRV32 CPU acting as a routing bottleneck.
 
 ```bash
+# Benchmark the hardware footprint of the exact multiplier
 make pnr N16=0 N8=0 N4=0
 ```
 

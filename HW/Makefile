@@ -144,6 +144,11 @@ $(ASC_FILE): $(SYNTH_JSON)
 clean: 
 	rm -rf $(SYNTH_DIR)
 	$(MAKE) -C REF clean
+	$(MAKE) -C MUL/2x2 clean
 	$(MAKE) -C MUL/4x4 clean
+	$(MAKE) -C MUL/8x8 clean
+	$(MAKE) -C MUL/16x16 clean
+	$(MAKE) -C ADD/OneBit clean
+	$(MAKE) -C ADD/Config clean
 
 #------------------------------------------------------------------------------

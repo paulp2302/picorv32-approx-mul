@@ -10,18 +10,16 @@ Based on the work *"Architectural-Space Exploration of Approximate Multipliers"*
 
 The architecture is parameterized making the precision configurable. While the approximate adder design is used globally, the exact number of bits subjected to approximate 2x2 multiplication can be dynamically chosen during synthesis via the `N16`, `N8`, and `N4` environment variables:
 - **`N4` / `N8` / `N16`**: Defines how many bits at the respective multiplier stage (4-bit, 8-bit, or 16-bit) utilize approximate logic. 
-- **Example (Fully Accurate)**: `N16=0 N8=0 N4=0` means all stages use exact multipliers.
+- **Example (Accurate 2x2 Multipliers)**: `N16=0 N8=0 N4=0` means all stages use exact multipliers.
 - **Example (Mixed)**: `N16=0 N8=0 N4=2` means only the two lowest bits of the 4-bit stages use approximate multipliers.
 - **Example (Highly Approximate)**: `N16=16 N8=8 N4=4` means all bits at all stages use approximate multiplication.
-
-Based on the work *"Architectural-Space Exploration of Approximate Multipliers"* by Rehman et al., this repository recursively implements a 16x16 bit multiplier using the $ApproxMul_2$ and $ApproxAdd_2$ designs. The approximate adder design is always used, while the number of bits using the approximate 2x2 multiplier can be choosen via the N4, N8 and N16 enviroment variables. The number after the N refers to the width of the multiplier it affects. An assigment of N4=0 means that all bits use accurate multpliers, N4=2 means the two lower bits use approximate multipliers and N4=4 means all bits use approximate multiplier.
 
 ![Approx Mul](graphics/approx_mul_circuit.jpg "Approximate Multiplier")
 ![Approx Add](graphics/approx_add_circuit.jpg "Approximate Adder")
 
 ## Required Tools
 - [OSS CAD suite](https://github.com/yosyshq/oss-cad-suite-build) (Includes Yosys, NextPNR, IceStorm, and Icarus Verilog)
-- [Modified PicoRV32 Repository](https://github.com/sevjaeg/picorv32) (Integrated in the picorv32 subdirectory)
+- [Modified PicoRV32 Repository](https://github.com/sevjaeg/picorv32) (Integrated in the `picorv32` subdirectory)
 - iCEbreaker FPGA board (Only required for physical testing)
 
 ## Project Structure
@@ -41,7 +39,7 @@ make bitstream N16=0 N8=0 N4=0
 
 Additionally, the system supports an Out-Of-Context (OOC) benchmark target (`make mul-pnr`) to determine the isolated maximum frequency ($F_{max}$) and resource usage (LUTs) of the multiplier across various approximate configurations, independent of the CPU bottleneck. Finally, `make prog` flashes the bitstream onto the physical iCEbreaker board.
 
-For changing the hardware in look at the `HW/README.md` file first to get a good overview of the approximate multiplier implementation.
+To modify the hardware, look at the `HW/README.md` file first to get a good overview of the approximate multiplier implementation.
 
 ## Performance Results
 
@@ -59,7 +57,7 @@ For changing the hardware in look at the `HW/README.md` file first to get a good
 
 **Students**:
 - Paul Pölzl (NxN multipliers, scripting, integration of the python reference)
-- Samir Hodzic (2x2 multipler, adders, result visualization)
+- Samir Hodzic (2x2 multiplier, adders, result visualization)
 - Veronica Kimelman (PCPI interface, software, integration of the PicoRV32)
 
 **Supervisors**:
@@ -69,4 +67,4 @@ For changing the hardware in look at the `HW/README.md` file first to get a good
 ## References
 - PicoRV32 Core by [YosysHQ](https://github.com/YosysHQ/picorv32)
 - Modified PicoSoC Environment by [Severin](https://github.com/sevjaeg/picorv32)
-- Python Golden Model by [Stefan Bajtala](https://github.com/SteBaj/LDISPython))
+- Python Golden Model by [Stefan Bajtala](https://github.com/SteBaj/LDISPython)

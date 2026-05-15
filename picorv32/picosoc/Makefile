@@ -1,13 +1,15 @@
 # Select your RISC-V compiler here (riscv32i/riscv32im/riscv32ic/riscv32imc)
 RISCV_ISA = i
 
-CROSS=/opt/riscv32$(RISCV_ISA)/bin/riscv32-unknown-elf-
+# Use the ubuntu toolchain to avoid rebuilding
+CROSS=riscv64-unknown-elf-
+#Original: CROSS=/opt/riscv32$(RISCV_ISA)/bin/riscv32-unknown-elf-
 CFLAGS= -O3
 
 #DHRY_SRCS = dhrystone/dhry.h dhrystone/stdlib.c dhrystone/dhry_2.c dhrystone/dhry_1.c
-APPROX_MUL_PATH = ../../HW/custom_mul.v
+APPROX_MUL_PATH = ../../HW/synth/custom_mul.v
 MUL_SRC_DIR = ../../SW
-MUL_SRCS = $(MUL_SRC_DIR)/custom_inst.h $(MUL_SRC_DIR)/custom_inst.c
+MUL_SRCS = $(MUL_SRC_DIR)/custom_inst.c $(MUL_SRC_DIR)/mul_test.c
 BRAM_SIZE = 3072
 
 # ---- Firmware analysis ----
@@ -29,6 +31,9 @@ sim: icebreaker_tb.vvp icebreaker_fw.hex icebreaker_fw_bram.hex
 synsim: icebreaker_syn_tb.vvp icebreaker_fw.hex
 	vvp -N $< +firmware=icebreaker_fw.hex
 
+view: testbench.vcd
+	gtkwave testbench.vcd &
+
 icebreaker.json: icebreaker.v spimemio.v simpleuart.v picosoc.v ice40up5k_spram.v $(APPROX_MUL_PATH) ../picorv32.v icebreaker_fw_random.hex
 	yosys -f verilog -v3 -ql icebreaker.log -p 'synth_ice40 -dsp -top icebreaker -json icebreaker.json'  $(filter %.v, $^)
 
@@ -42,7 +47,7 @@ icebreaker_syn.v: icebreaker.json
 	yosys -p 'read_json icebreaker.json; write_verilog icebreaker_syn.v'
 
 icebreaker.asc: icebreaker.pcf icebreaker.json
-	nextpnr-ice40 --freq 13 --up5k --package sg48 --asc icebreaker.asc --pcf icebreaker.pcf --json icebreaker.json
+	nextpnr-ice40 --freq 35 --up5k --package sg48 --asc icebreaker.asc --pcf icebreaker.pcf --json icebreaker.json
 
 # This requires a reset address of 0x0010_0000 and the .text section mapped to FLASH in the linker script
 icebreaker_flash.bin: icebreaker.asc

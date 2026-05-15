@@ -21,7 +21,7 @@
 #include <stdbool.h>
 
 //#include "../dhrystone/dhry_top.h"
-#include "../../SW/custom_inst.h"
+#include "../../SW/mul_test.h"
 
 #ifdef ICEBREAKER
 #  define MEM_TOTAL 0x3000
@@ -487,42 +487,14 @@ void cmd_echo()
 
 void main()
 {
-	uint32_t a = 0;
-	uint32_t b = 0;
-	uint32_t res = 0;
-	uint32_t res_approx = 0;
-	//reg_leds = 31;
 	reg_uart_clkdiv = 104;
-	//print("Booting..\n");
+	print("Booting..\n");
 
-	//reg_leds = 63;
-	//set_flash_qspi_flag();
-	
-	while (getchar_prompt("ENTER to continue..\n") != '\r') { /* wait */ }
-		
-	uint8_t test_num = 100;
-	for (uint8_t i = 0; i < test_num; i++)
-	{
-		a = i * 5;
-		b = i * 2;
-		res = a * b;
-		res_approx = mul16(a, b);
-		
-		print("A = ");
-		print_dec(a);
-		print("\n");
-		
-		print("B = ");
-		print_dec(b);
-		print("\n");
+	// Uncomment the line below when testing on the physical iCEbreaker board
+	// It prevents the test from running before you open your serial monitor
+	// while (getchar_prompt("ENTER to continue..\n") != '\r') { /* wait */ } */
 
-		print("Res = ");
-		print_hex(res, 32);
-		print("\n");
+	mul_test(5, 2, 100);
 
-		print("Res (Approx)= ");
-		print_hex(res_approx, 32);
-		print("\n\n");
-	}
 	return;
 }

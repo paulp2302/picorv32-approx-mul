@@ -12,12 +12,12 @@ from approxaddN import *
 from approxmul2 import *
 from approxmulN import *
 
-plot_scatter = False
+plot_scatter = True
 
 test_vec_size = 10000
 width = 16 # 2 4 8 16
-n16 = 16
-n8 = 0
+n16 = 25
+n8 = 8
 n4 = 0
 
 if len(argv) == 6:
@@ -65,15 +65,41 @@ def exactVSapproxMul():
 
     # Scatter plot between expected and approximated results
     if(plot_scatter):
+
+        output_dir = f"plots/width_{width}/{n16}_{n8}_{n4}"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Linear Scatter
         fig, ax = plt.subplots()
         line = mlines.Line2D([0,1], [0,1], color="red")
         plt.xlabel("Expected result")
-        plt.ylabel("Errors")
+        plt.ylabel("Approximated result")
         ax.scatter(exact_result, approx_result)
         transform = ax.transAxes
         line.set_transform(transform)
         ax.add_line(line)
-        plt.show()
+        plt.savefig(os.path.join(output_dir, "scatter_linear.png"), dpi=300, bbox_inches='tight')
+        plt.close()
+
+        # Logarithmic
+        fig, ax = plt.subplots()
+        plt.xlabel("Expected result")
+        plt.ylabel("Relative Error")
+        ax.scatter(exact_result, errors)
+        plt.yscale('log')  # Optionally use logarithmic scale for better visualization
+        plt.savefig(os.path.join(output_dir, "scatter_log.png"), dpi=300, bbox_inches='tight')
+        plt.close()
+
+        # Histogramm
+        plt.figure()
+        plt.hist(errors, bins=50, log=True)  # Log scale for better visualization of distribution
+        plt.xlabel("Relative Error")
+        plt.ylabel("Frequency")
+        plt.title("Histogram of Relative Errors")
+        plt.savefig(os.path.join(output_dir, "error_histogram.png"), dpi=300, bbox_inches='tight')
+        plt.close()
+
+        print(f"Plots successfully saved to: {output_dir}/")
 
 if __name__ == "__main__":
     exactVSapproxMul()

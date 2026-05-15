@@ -1,9 +1,14 @@
 #------------------------------------------------------------------------------
 # Internal variables
 #
+# Number of test vectors
+NUM_TV ?= 1000
+#
+WAVE_FILE ?= waves.gtkw
 TESTBENCH ?= testbench.v
-TEST_VECTORS ?= tv_config.tv
-ADDN_PATH ?= ../ADD/Config/$(TEST_VECTORS)
+TEST_VECTORS = tv_$(WIDTH_ADD)_$(N_ADD)_$(NUM_TV).tv
+REF_DIR ?= ../../REF
+REF_SCRIPT = $(REF_DIR)/approxaddN.py
 #
 #------------------------------------------------------------------------------
 #
@@ -18,12 +23,6 @@ YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 # Default values for width and accuracy
 WIDTH_ADD ?= 32
 N_ADD ?= 13
-#
-# Set environment variables for the testvector generations
-export WIDTH_ADD
-export N_ADD
-export TEST_VECTORS
-export ADDN_PATH
 #
 # Define source directories
 SRC_DIRS := . ../../ADD/OneBit
@@ -81,14 +80,11 @@ help:
 	@echo "N_ADD=<int>"
 	@echo "    Specifies the number of approximate bits of the configurable n-Bit adder."
 	@echo ""
+	@echo "NUM_TV=<int>"
+	@echo "    Specifies the number of test vectors used in the automated testbench."
+	@echo ""
 	@echo "TESTBENCH=<filename>"
 	@echo "    Specifies the testbench to use for verifying the configurable n-Bit adder."
-	@echo ""
-	@echo "TESTVECTOR=<filename>"
-	@echo "    Specifies the name of the testvector file."
-	@echo ""
-	@echo "ADDN_PATH=<path/to/file>"
-	@echo "    Specifies the path from the REF to the ADD/Config directory."
 	@echo ""
 	@echo ""
 	@echo "Targets"
@@ -99,6 +95,9 @@ help:
 	@echo ""
 	@echo "make sim"
 	@echo "    Simulate the configurable MultiBit adder."
+	@echo ""
+	@echo "make sim-gui"
+	@echo "    Simulate the configurable MultiBit adder and open the traces in GTKWave."
 	@echo ""
 	@echo "make clean"
 	@echo "    Delete generated files"
@@ -117,12 +116,20 @@ tv: $(TEST_VECTORS)
 sim: 
 	@$(MAKE) $(SIM_DIR)/ConfigAddMultiBit.vcd
 #
+#
+# Open waveforms in GTKWave
+#
+.PHONY: sim-gui
+sim-gui: sim
+	gtkwave $(SIM_DIR)/ConfigAddMultiBit.vcd $(WAVE_FILE) &
+#
 #------------------------------------------------------------------------------
 #
 # Generate the testvector file
 #
 $(TEST_VECTORS):
-	cd ../../REF/ && make addN && make clean
+	@echo "Generating $(NUM_TV) test vectors for $(WIDTH_ADD)-bit adder with $(N_ADD) approximated bits..."
+	python3 $(REF_SCRIPT) $(NUM_TV) $(WIDTH_ADD) $(N_ADD) $@
 #
 #------------------------------------------------------------------------------
 #
@@ -138,6 +145,7 @@ $(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH) $(TEST_VECTORS)
 		-D 'VCD_FILE="$@"' \
 		-D 'WIDTH_ADD=$(WIDTH_ADD)' \
 		-D 'N_ADD=$(N_ADD)' \
+		-D 'NUM_TV=$(NUM_TV)' \
 		-D 'TEST_VECTORS="$(TEST_VECTORS)"'
 	vvp $(SIM_DIR)/$*.iverilog
 #

@@ -29,6 +29,10 @@
 `define N4 0
 `endif
 
+`ifndef NUM_TV
+`define NUM_TV 1000
+`endif
+
 module mul8x8_tb;
     //parameter ACC_TEST_VECTORS = "tv_accurate.tv" 
     //parameter APPROX_TEST_VECTORS = "tv_approx.tv"
@@ -39,14 +43,16 @@ module mul8x8_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[31:0] testvectors[0:99];      // array of testvectors
+    reg[31:0] testvectors[0:`NUM_TV-1];      // array of testvectors
 
     // Instantiate the design under test:
-    if (`TEST_MODE == 0)
-        Config8x8Mul #(.N8(`N8), .N4(`N4)) mul(.a(a), .b(b), .out(out)); 
-    else if (`TEST_MODE == 1)
-        Config8x8Mul mul(.a(a), .b(b), .out(out));
-    
+    generate
+        if (`TEST_MODE == 0)
+            Config8x8Mul #(.N8(`N8), .N4(`N4)) mul(.a(a), .b(b), .out(out)); 
+        else if (`TEST_MODE == 1)
+            Config8x8Mul mul(.a(a), .b(b), .out(out));
+    endgenerate
+
     // Generate clock
     always // no sensitivity list
         begin
@@ -84,9 +90,11 @@ module mul8x8_tb;
 
             // increment array index and read th next testvector
             vectornum = vectornum + 1;
-            if (testvectors[vectornum] === 32'bx)
+            if (vectornum == `NUM_TV)
                 begin
-                    $display("%d tests completed with %d errors", vectornum, errors);
+                    $display("========================================");
+                    $display("Simulation finished: %d tests", vectornum);
+                    $display("Functional errors: %d", errors);
                     $finish;    // End simulation
                 end
             end

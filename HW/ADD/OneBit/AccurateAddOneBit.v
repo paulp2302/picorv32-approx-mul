@@ -28,5 +28,5 @@ module AccurateAddOneBit (A, B, Cin, Cout, Sum);
 
     assign Sum  = (A ^ B) ^ Cin;
     assign Cout = (A & B) | ((A ^ B) & Cin);
-    
+
 endmodule

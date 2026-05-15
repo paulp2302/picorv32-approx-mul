@@ -1,30 +1,41 @@
 #------------------------------------------------------------------------------
-#
-# Simulation cell library
-#
-YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
+# Top Level Synthesis of the PicoRV32 PCPI approximate multiplier
+#------------------------------------------------------------------------------
 #
 #------------------------------------------------------------------------------
-# 
-# Variables
-#
-# Multiplier accuracies
-N16 ?= 16
-N8 ?= 8
-N4 ?= 4
-#
-# Set the environment varialbes to generate the correct test vectors
-export N16
-export N8
-export N4
-#
-# Define source directories
-SRC_DIRS := .
+# Module Identity and Parameters
+#------------------------------------------------------------------------------
+TOP_MODULE := custom_mul
+BENCHMARK_MODULE := benchmark_wrapper
+
+# Multiplier accuracies (defaults are accurate)
+N16 ?= 0
+N8  ?= 0
+N4  ?= 0
+
+MODULE_PARAMS := -set N16 $(N16) -set N8 $(N8) -set N4 $(N4)
+
+# Define the target device for nextpnr
+DEVICE := up5k
+PACKAGE := sg48
+
+# Set an aggressive target frequency to force optimization
+TARGET_FREQ := 20
+
+#------------------------------------------------------------------------------
+# Directories and Paths
+#------------------------------------------------------------------------------
 SYNTH_DIR := ./synth
-#
+SYNTH_OUT := $(SYNTH_DIR)/$(TOP_MODULE).v
+SYNTH_JSON := $(SYNTH_DIR)/$(TOP_MODULE).json
+ASC_FILE   := $(SYNTH_DIR)/$(TOP_MODULE).asc
+SRC_DIRS := .
+GLOBAL_TCL := global_synth.tcl
+YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
+
 # Define internal variable for the different sources
 SRCS := $(shell find $(SRC_DIRS) -name '*.v' -and -not -name '*testbench.v' \
-		-and -not -name '$(TESTBENCH)')
+		-and -not -name '$(TESTBENCH)' | grep -v '/sim/' | grep -v '/synth/')
 #
 # Define the suffixes used in this Makefile
 .SUFFIXES:
@@ -85,30 +96,54 @@ help:
 	@echo "make synth"
 	@echo "    Synthesize the configurable 16-Bit multiplier with PCPI interface."
 	@echo ""
+	@echo "make pnr"
+	@echo "    Place and route the standalone configurable 16-Bit multiplier."
+	@echo "    Determines the isolated resource usage and maximum frequncy."
+	@echo ""
 	@echo "make clean"
 	@echo "    Delete generated files"
 	@echo ""
 #
 #------------------------------------------------------------------------------
-#
-# Define target for the test vector generation
-#
+
+# Define target for the synthesis of the configurable multiplier
 .PHONY: synth
-synth: $(SYNTH_DIR)/top.v
-#
+synth: $(SYNTH_OUT)
+
+# Define target for the standalone place and route
+.PHONY: pnr
+pnr: $(ASC_FILE)
+
 #------------------------------------------------------------------------------
-#
+
 # Synthesize Verilog designs
-#
-$(SYNTH_DIR)/%.v: %.tcl
-	yosys $^
-#
+$(SYNTH_OUT): $(SRCS) $(GLOBAL_TCL)
+	mkdir -p $(SYNTH_DIR)
+	TOP_MODULE=$(TOP_MODULE) MODULE_PARAMS="$(MODULE_PARAMS)" \
+	yosys -p "read_verilog $(SRCS); tcl $(GLOBAL_TCL); write_verilog $@"
+	@echo "Successfully built: $@"
+
+# Create the JSON
+$(SYNTH_JSON): $(SRCS) benchmark.v $(GLOBAL_TCL)
+	mkdir -p $(SYNTH_DIR)
+	TOP_MODULE=$(BENCHMARK_MODULE) MODULE_PARAMS="$(MODULE_PARAMS)" \
+	yosys -p "read_verilog $(SRCS); tcl $(GLOBAL_TCL); synth_ice40 -top $(BENCHMARK_MODULE) -json $@"
+
+# Place and route step
+$(ASC_FILE): $(SYNTH_JSON)
+	nextpnr-ice40 --$(DEVICE) --package $(PACKAGE) --json $< --asc $@ --freq $(TARGET_FREQ)
+	@echo "=================================================================="
+	@echo " Look at the NextPNR log above for 'ICESTORM_LC' to get LUT count!"
+	@echo " Look at the NextPNR log above for 'Max frequency' to get Fmax!"
+	@echo "=================================================================="
+
 #------------------------------------------------------------------------------
-#
+
 # Clean directory
-#
 .PHONY: clean
 clean: 
-	rm -rf custom_mul.v
-#
+	rm -rf $(SYNTH_DIR)
+	$(MAKE) -C REF clean
+	$(MAKE) -C MUL/4x4 clean
+
 #------------------------------------------------------------------------------

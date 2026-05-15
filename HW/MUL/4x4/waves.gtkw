@@ -1,0 +1,27 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Tue May 12 13:09:27 2026
+[*]
+[dumpfile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/MUL/4x4/sim/Config4x4Mul_2.vcd"
+[dumpfile_mtime] "Tue May 12 13:09:08 2026"
+[dumpfile_size] 69580
+[savefile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/MUL/4x4/waves.gtkw"
+[timestart] 0
+[size] 1920 985
+[pos] -1 -1
+*-11.103047 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 297
+[signals_width] 126
+[sst_expanded] 1
+[sst_vpaned_height] 292
+@28
+mul4x4_tb.reset
+mul4x4_tb.clk
+@25
+mul4x4_tb.a[3:0]
+mul4x4_tb.b[3:0]
+mul4x4_tb.out[7:0]
+mul4x4_tb.out_exp[7:0]
+mul4x4_tb.errors[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

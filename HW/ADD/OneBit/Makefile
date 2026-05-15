@@ -1,6 +1,7 @@
 #------------------------------------------------------------------------------
 # Internal variables
 #
+WAVE_FILE ?= waves.gtkw
 TESTBENCH ?= testbench.v
 #
 #------------------------------------------------------------------------------
@@ -76,6 +77,12 @@ help:
 	@echo "make approx"
 	@echo "    Simulate the approximate OneBit adder."
 	@echo ""
+	@echo "make accurate-gui"
+	@echo "    Show the trace of the accurate one bit adder simulation in GTKWave."
+	@echo ""
+	@echo "make approx"
+	@echo "    Show the trace of the approximate one bit adder simulation in GTKWave."
+	@echo ""
 	@echo "make clean"
 	@echo "    Delete generated files"
 	@echo ""
@@ -84,13 +91,27 @@ help:
 #
 # Define target for simulation of the approximate OneBit adder
 #
-.PHONY: approx 
-approx: $(SIM_DIR)/Approx2x2Mul.vcd MODE=1
+.PHONY: approx
+approx: MODE=1
+approx: $(SIM_DIR)/ApproxOneBitAdder.vcd
 #
 # Define target for simulation of the accurate OneBit adder
 #
 .PHONY: accurate
-accurate: $(SIM_DIR)/Accurate2x2Mul.vcd MODE=0
+accurate: MODE=0
+accurate: $(SIM_DIR)/AccurateOneBitAdder.vcd
+#
+# Define target to display the traces of the approximate multiplier
+#
+.PHONY: approx-gui
+approx-gui: approx
+	gtkwave $(SIM_DIR)/ApproxOneBitAdder.vcd $(WAVE_FILE) &
+#
+# Define target to display the traces of the accurate multiplier
+#
+.PHONY: accurate-gui
+accurate-gui: accurate
+	gtkwave $(SIM_DIR)/AccurateOneBitAdder.vcd $(WAVE_FILE) &
 #
 #------------------------------------------------------------------------------
 #

@@ -23,6 +23,10 @@
 `define N_ADD 4
 `endif
 
+`ifndef NUM_TV
+`define NUM_TV 1000
+`endif
+
 module ConfigAddMultiBit_tb;
 
     parameter bitWidth = `WIDTH_ADD;
@@ -38,7 +42,7 @@ module ConfigAddMultiBit_tb;
     ConfigAddMultiBit #(.bitWidth(bitWidth), .approxWidth(approxWidth)) uut (.A(A), .B(B), .Sum(Sum));
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[(3*bitWidth-1):0] testvectors [0:99]; // array of testvectors
+    reg[(3*bitWidth-1):0] testvectors [0:`NUM_TV-1]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -85,10 +89,12 @@ module ConfigAddMultiBit_tb;
 
                 // increment array index and read next testvector
                 vectornum = vectornum + 1;
-                if (vectornum === $size(testvectors))
+                if (vectornum == `NUM_TV)
                     begin
-                        $display("%d tests completed with %d errors", vectornum, errors);
-                        $finish; // End simulation
+                        $display("========================================");
+                        $display("Simulation finished: %d tests", vectornum);
+                        $display("Functional errors: %d", errors);
+                        $finish;    // End simulation
                     end
-            end
+                end
 endmodule

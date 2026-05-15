@@ -1,0 +1,64 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon May 11 08:38:22 2026
+[*]
+[dumpfile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/MUL/2x2/sim/Approx2x2Mul.vcd"
+[dumpfile_mtime] "Mon May 11 08:08:59 2026"
+[dumpfile_size] 1728
+[savefile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/MUL/2x2/approx_waves.gtkw"
+[timestart] 0
+[size] 1920 985
+[pos] -27 -24
+*-11.298553 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 297
+[signals_width] 126
+[sst_expanded] 1
+[sst_vpaned_height] 293
+@28
+mul2x2_tb.reset
+mul2x2_tb.clk
+@24
+mul2x2_tb.a[1:0]
+mul2x2_tb.b[1:0]
+mul2x2_tb.out[3:0]
+@22
+mul2x2_tb.out_exp[3:0]
+@c00023
+mul2x2_tb.errors[31:0]
+@29
+(0)mul2x2_tb.errors[31:0]
+(1)mul2x2_tb.errors[31:0]
+(2)mul2x2_tb.errors[31:0]
+(3)mul2x2_tb.errors[31:0]
+(4)mul2x2_tb.errors[31:0]
+(5)mul2x2_tb.errors[31:0]
+(6)mul2x2_tb.errors[31:0]
+(7)mul2x2_tb.errors[31:0]
+(8)mul2x2_tb.errors[31:0]
+(9)mul2x2_tb.errors[31:0]
+(10)mul2x2_tb.errors[31:0]
+(11)mul2x2_tb.errors[31:0]
+(12)mul2x2_tb.errors[31:0]
+(13)mul2x2_tb.errors[31:0]
+(14)mul2x2_tb.errors[31:0]
+(15)mul2x2_tb.errors[31:0]
+(16)mul2x2_tb.errors[31:0]
+(17)mul2x2_tb.errors[31:0]
+(18)mul2x2_tb.errors[31:0]
+(19)mul2x2_tb.errors[31:0]
+(20)mul2x2_tb.errors[31:0]
+(21)mul2x2_tb.errors[31:0]
+(22)mul2x2_tb.errors[31:0]
+(23)mul2x2_tb.errors[31:0]
+(24)mul2x2_tb.errors[31:0]
+(25)mul2x2_tb.errors[31:0]
+(26)mul2x2_tb.errors[31:0]
+(27)mul2x2_tb.errors[31:0]
+(28)mul2x2_tb.errors[31:0]
+(29)mul2x2_tb.errors[31:0]
+(30)mul2x2_tb.errors[31:0]
+(31)mul2x2_tb.errors[31:0]
+@1401201
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0

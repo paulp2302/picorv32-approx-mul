@@ -25,6 +25,10 @@
 `define N4 0
 `endif
 
+`ifndef NUM_TV
+`define NUM_TV 256
+`endif
+
 module mul4x4_tb;
     //parameter ACC_TEST_VECTORS = "tv_accurate.tv" 
     //parameter APPROX_TEST_VECTORS = "tv_approx.tv"
@@ -35,14 +39,16 @@ module mul4x4_tb;
 
     reg clk, reset;                 // clock and reset are internal
     reg[31:0] vectornum, errors;    // bookkeeping variables
-    reg[15:0] testvectors[0:99];      // array of testvectors
+    reg[15:0] testvectors[0:`NUM_TV-1];      // array of testvectors
 
     // Instantiate the design under test:
-    if (`TEST_MODE == 0)
-        Config4x4Mul #(.N4(`N4)) mul(.a(a), .b(b), .out(out)); 
-    else if (`TEST_MODE == 1)
-        Config4x4Mul mul(.a(a), .b(b), .out(out));
-    
+    generate
+        if (`TEST_MODE == 0)
+            Config4x4Mul #(.N4(`N4)) mul(.a(a), .b(b), .out(out)); 
+        else if (`TEST_MODE == 1)
+            Config4x4Mul mul(.a(a), .b(b), .out(out));
+    endgenerate
+
     // Generate clock
     always // no sensitivity list
         begin
@@ -66,7 +72,7 @@ module mul4x4_tb;
             #1; {a, b, out_exp} = testvectors[vectornum];
         end
 
-    // Responsechecker:
+    // Response checker:
     // check results on falling edge of clk
     always @(negedge clk)
         if (~reset) // skip during reset
@@ -80,9 +86,11 @@ module mul4x4_tb;
 
             // increment array index and read th next testvector
             vectornum = vectornum + 1;
-            if (testvectors[vectornum] === 16'bx)
+            if (vectornum == `NUM_TV)
                 begin
-                    $display("%d tests completed with %d errors", vectornum, errors);
+                    $display("========================================");
+                    $display("Simulation finished: %d tests", vectornum);
+                    $display("Functional errors: %d", errors);
                     $finish;    // End simulation
                 end
             end

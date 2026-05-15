@@ -28,5 +28,5 @@ module ApproxAddOneBit (A, B, Cin, Cout, Sum);
 
     assign Sum  = (!B) & ((!A) | (!Cin));
     assign Cout = !Sum;
-    
+
 endmodule

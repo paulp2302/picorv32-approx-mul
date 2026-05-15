@@ -18,9 +18,7 @@
 `define VCD_FILE "onebit.vcd"
 `endif
 
-
 module AddOneBit_tb;
-
     reg A;
     reg B;
     reg Cin;
@@ -31,14 +29,16 @@ module AddOneBit_tb;
     reg Cout_expct;
 
     // Instantiate the Unit Under Test (UUT)
-    if (`TEST_MODE == 0)
-        AccurateAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
-    else
-        ApproxAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+    generate
+        if (`TEST_MODE == 0)
+            AccurateAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+        else
+            ApproxAddOneBit uut (.A(A), .B(B), .Cin(Cin), .Cout(Cout), .Sum(Sum));
+    endgenerate
 
     reg clk, reset; // clock and reset are internal
     reg[31:0] vectornum, errors; // bookkeeping variables
-    reg[4:0] testvectors [7:0]; // array of testvectors
+    reg[4:0] testvectors [0:7]; // array of testvectors
 
     // generate clock
     always // no sensitivity list
@@ -88,7 +88,7 @@ module AddOneBit_tb;
 
                 // increment array index and read next testvector
                 vectornum = vectornum + 1;
-                if (testvectors[vectornum] ===5'bx)
+                if (testvectors[vectornum] === 5'bx)
                     begin
                         $display("%d tests completed with %d errors", vectornum, errors);
                         $finish; // End simulation

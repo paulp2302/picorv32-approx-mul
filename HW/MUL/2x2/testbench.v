@@ -35,10 +35,12 @@ module mul2x2_tb;
     reg[7:0] testvectors[0:15];      // array of testvectors
 
     // Instantiate the design under test:
-    if (`TEST_MODE == 0)
-        Accurate2x2Mul mul(.a(a), .b(b), .out(out));
-    else
-        Approx2x2Mul mul(.a(a), .b(b), .out(out));
+    generate
+        if (`TEST_MODE == 0)
+            Accurate2x2Mul mul(.a(a), .b(b), .out(out));
+        else
+            Approx2x2Mul mul(.a(a), .b(b), .out(out));
+    endgenerate
 
     // Generate clock
     always // no sensitivity list

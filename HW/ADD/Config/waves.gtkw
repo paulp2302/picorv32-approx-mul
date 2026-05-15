@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Tue May 12 10:21:56 2026
+[*]
+[dumpfile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/ADD/Config/sim/ConfigAddMultiBit.vcd"
+[dumpfile_mtime] "Tue May 12 10:20:29 2026"
+[dumpfile_size] 453005
+[savefile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/ADD/Config/waves.gtkw"
+[timestart] 0
+[size] 1920 985
+[pos] -1 -1
+*-4.435580 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 297
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 292
+@28
+ConfigAddMultiBit_tb.reset
+ConfigAddMultiBit_tb.clk
+@24
+ConfigAddMultiBit_tb.A[31:0]
+ConfigAddMultiBit_tb.B[31:0]
+ConfigAddMultiBit_tb.Sum[31:0]
+ConfigAddMultiBit_tb.Sum_expct[31:0]
+@25
+ConfigAddMultiBit_tb.errors[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,27 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon May 11 23:09:53 2026
+[*]
+[dumpfile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/ADD/OneBit/sim/AccurateOneBitAdder.vcd"
+[dumpfile_mtime] "Mon May 11 23:08:15 2026"
+[dumpfile_size] 1013
+[savefile] "/mnt/c/Users/paulp/Documents/GitHub/approx_mul/HW/ADD/OneBit/waves.gtkw"
+[timestart] 0
+[size] 1920 985
+[pos] -27 -24
+*-3.503116 61 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 297
+[signals_width] 78
+[sst_expanded] 1
+[sst_vpaned_height] 292
+@29
+AddOneBit_tb.reset
+@28
+AddOneBit_tb.clk
+AddOneBit_tb.A
+AddOneBit_tb.B
+AddOneBit_tb.Cin
+AddOneBit_tb.Sum
+AddOneBit_tb.Cout
+[pattern_trace] 1
+[pattern_trace] 0

@@ -9,9 +9,9 @@
 
 `timescale 100ps/10ps // Unit of time is 100ps
 
-`ifndef TEST_MODE
-`define TEST_MODE 0
-`endif 
+`ifndef APPROX
+`define APPROX 0
+`endif
 
 `ifndef ACC_TEST_VECTORS
 `define ACC_TEST_VECTORS "tv_accurate.tv"
@@ -36,7 +36,7 @@ module mul2x2_tb;
 
     // Instantiate the design under test:
     generate
-        if (`TEST_MODE == 0)
+        if (`APPROX == 0)
             Accurate2x2Mul mul(.a(a), .b(b), .out(out));
         else
             Approx2x2Mul mul(.a(a), .b(b), .out(out));
@@ -52,7 +52,7 @@ module mul2x2_tb;
     initial begin
         $dumpfile(`VCD_FILE); // File with simulation resuls
         $dumpvars(0, mul2x2_tb); // Select which variables are written to file 
-        if (`TEST_MODE == 0)
+        if (`APPROX == 0)
             $readmemb(`ACC_TEST_VECTORS, testvectors); // Readvectors
         else
             $readmemb(`APPROX_TEST_VECTORS, testvectors); // Readvectors

@@ -25,6 +25,8 @@ jobs:
 
       - name: Set up OSS CAD Suite (Yosys, Icarus Verilog)
         uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run simulation (HW/MUL/${{ matrix.dir }})
         working-directory: HW/MUL/${{ matrix.dir }}

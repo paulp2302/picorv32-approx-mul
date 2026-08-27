@@ -22,7 +22,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run simulation sweep
-        run: .github/scripts/run_sim_sweep.sh sim
+        run: bash .github/scripts/run_sim_sweep.sh sim
 
       - name: Run synthesized simulation sweep
-        run: .github/scripts/run_sim_sweep.sh sim-synth
+        run: bash .github/scripts/run_sim_sweep.sh sim-synth

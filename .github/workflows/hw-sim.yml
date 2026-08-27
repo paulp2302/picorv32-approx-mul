@@ -1,0 +1,31 @@
+name: HW Multiplier Simulation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Each entry uses its Makefile's built-in default N16/N8/N4 values.
+        # To sweep specific configurations later, add N16/N8/N4 here and
+        # pass them through with `make sim N16=... N8=... N4=...` below.
+        dir: [2x2, 4x4, 8x8, 16x16]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Set up OSS CAD Suite (Yosys, Icarus Verilog)
+        uses: YosysHQ/setup-oss-cad-suite@v4
+
+      - name: Run simulation (HW/MUL/${{ matrix.dir }})
+        working-directory: HW/MUL/${{ matrix.dir }}
+        run: make sim

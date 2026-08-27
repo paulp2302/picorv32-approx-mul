@@ -96,6 +96,12 @@ help:
 #
 #------------------------------------------------------------------------------
 #
+# Define target for simulation of both multiplier variants
+# (kept as a `sim` alias for parity with the other MUL/ Makefiles)
+#
+.PHONY: sim
+sim: accurate approx
+#
 # Define target for simulation of the approximate multiplier
 #
 .PHONY: approx

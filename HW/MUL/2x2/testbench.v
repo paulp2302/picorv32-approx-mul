@@ -85,6 +85,8 @@ module mul2x2_tb;
             if (testvectors[vectornum] === 8'bx)
                 begin
                     $display("%d tests completed with %d errors", vectornum, errors);
+                    if (errors > 0)
+                        $fatal(1, "Simulation failed with %0d functional errors", errors);
                     $finish;    // End simulation
                 end
             end

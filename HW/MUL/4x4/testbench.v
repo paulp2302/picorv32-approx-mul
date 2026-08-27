@@ -91,6 +91,8 @@ module mul4x4_tb;
                     $display("========================================");
                     $display("Simulation finished: %d tests", vectornum);
                     $display("Functional errors: %d", errors);
+                    if (errors > 0)
+                        $fatal(1, "Simulation failed with %0d functional errors", errors);
                     $finish;    // End simulation
                 end
             end

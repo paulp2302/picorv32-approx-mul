@@ -23,7 +23,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install accuracy analysis dependencies
-        run: pip install -r HW/REF/requirements.txt
+        run: python3 -m pip install -r HW/REF/requirements.txt
 
       - name: Collect accuracy metrics
         run: python3 .github/scripts/collect_accuracy.py

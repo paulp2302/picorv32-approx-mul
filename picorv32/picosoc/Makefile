@@ -47,7 +47,7 @@ icebreaker_syn.v: icebreaker.json
 	yosys -p 'read_json icebreaker.json; write_verilog icebreaker_syn.v'
 
 icebreaker.asc: icebreaker.pcf icebreaker.json
-	nextpnr-ice40 --freq 35 --up5k --package sg48 --asc icebreaker.asc --pcf icebreaker.pcf --json icebreaker.json
+	nextpnr-ice40 --freq 35 --up5k --package sg48 --asc icebreaker.asc --pcf icebreaker.pcf --json icebreaker.json --report report.json
 
 # This requires a reset address of 0x0010_0000 and the .text section mapped to FLASH in the linker script
 icebreaker_flash.bin: icebreaker.asc

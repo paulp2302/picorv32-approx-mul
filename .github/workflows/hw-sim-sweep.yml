@@ -1,0 +1,37 @@
+name: HW Multiplier Simulation
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v7
+
+      - name: Set up OSS CAD Suite (Yosys, Icarus Verilog)
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          python-override: true
+          version: 2026-08-27
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print tool versions
+        run: |
+          yosys --version
+          iverilog -V
+          python3 --version
+          which python3
+
+      - name: Run simulation sweep
+        run: bash .github/scripts/run_sim_sweep.sh sim
+
+      - name: Run synthesized simulation sweep
+        run: bash .github/scripts/run_sim_sweep.sh sim-synth

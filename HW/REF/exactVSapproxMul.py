@@ -12,36 +12,20 @@ from approxaddN import *
 from approxmul2 import *
 from approxmulN import *
 
-plot_scatter = True
 
-test_vec_size = 10000
-width = 16 # 2 4 8 16
-n16 = 25
-n8 = 8
-n4 = 0
+def exactVSapproxMul(test_vec_size, width, n16, n8, n4, plot_scatter=True):
+    N_ = {16: n16, 8: n8, 4: n4}
 
-if len(argv) == 6:
-    test_vec_size = int(argv[1])
-    width = int(argv[2])
-    n16 = int(argv[3])
-    n8 = int(argv[4])
-    n4 = int(argv[5])
-    print("Input parameters received\n")
-
-N_ = {16: n16, 8: n8, 4: n4}
-
-def exactVSapproxMul():
     in1, in2 = generate_input_vectors(test_vec_size, width)
     approx_result = np.zeros(test_vec_size)
-    errors = np.zeros(test_vec_size)
-    
+
     in1 = np.array(in1, dtype=np.uint32)
     in2 = np.array(in2, dtype=np.uint32)
 
     for i in range(test_vec_size):
         # approximate multiplication
         approx_result[i] = approxmulN(int(in1[i]), int(in2[i]), width, N_)
-    
+
     # Exact unsigned multiplication
     exact_result = in1 * in2
 
@@ -50,7 +34,7 @@ def exactVSapproxMul():
     zero_idx = np.argwhere(exact_result == 0)
     errors[zero_idx] = 0
     exact_result[zero_idx] = 1
-    errors/= exact_result
+    errors /= exact_result
 
     # Calculate metrics
     avg_error = np.mean(errors)
@@ -64,7 +48,7 @@ def exactVSapproxMul():
     print(f'Max relative error:     {max_error: >15.3%}')
 
     # Scatter plot between expected and approximated results
-    if(plot_scatter):
+    if plot_scatter:
 
         output_dir = f"plots/width_{width}/{n16}_{n8}_{n4}"
         os.makedirs(output_dir, exist_ok=True)
@@ -101,5 +85,22 @@ def exactVSapproxMul():
 
         print(f"Plots successfully saved to: {output_dir}/")
 
+    return avg_error, median_error, max_error
+
+
 if __name__ == "__main__":
-    exactVSapproxMul()
+    test_vec_size = 10000
+    width = 16 # 2 4 8 16
+    n16 = 25
+    n8 = 8
+    n4 = 0
+
+    if len(argv) == 6:
+        test_vec_size = int(argv[1])
+        width = int(argv[2])
+        n16 = int(argv[3])
+        n8 = int(argv[4])
+        n4 = int(argv[5])
+        print("Input parameters received\n")
+
+    exactVSapproxMul(test_vec_size, width, n16, n8, n4)

@@ -6,6 +6,14 @@ TESTBENCH ?= testbench.v
 TEST_VECTORS_ACC ?= tv_accurate.tv
 TEST_VECTORS_APPROX ?= tv_approx.tv
 WAVE_FILE ?= waves.gtkw
+
+# Select the accurate (0, default) or approximate (1) multiplier variant
+APPROX ?= 0
+ifeq ($(APPROX),0)
+MODULE_NAME := Accurate2x2Mul
+else
+MODULE_NAME := Approx2x2Mul
+endif
 #
 #------------------------------------------------------------------------------
 #
@@ -14,19 +22,17 @@ WAVE_FILE ?= waves.gtkw
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
 #
 #------------------------------------------------------------------------------
-# 
+#
 # Variables
 #
 # Define sources and output directories
 SRCS := Accurate2x2Mul.v Approx2x2Mul.v
 SIM_DIR := ./sim
+SYNTH_DIR := ./synth
 #
 # Define the suffixes used in this Makefile
 .SUFFIXES:
 .SUFFIXES: .v .iverilog .vcd .tv
-#
-# Define the mode variable used to control the testbench
-MODE = 0
 #
 #------------------------------------------------------------------------------
 #
@@ -66,6 +72,9 @@ help:
 	@echo "    OPTION ?= value"
 	@echo ""
 	@echo ""
+	@echo "APPROX=<0|1>"
+	@echo "    Selects the accurate (0, default) or approximate (1) 2-Bit multiplier."
+	@echo ""
 	@echo "TESTBENCH=<filename>"
 	@echo "    Specifies the testbench to use for the 2-Bit multipliers."
 	@echo ""
@@ -78,17 +87,20 @@ help:
 	@echo "Targets"
 	@echo "-------"
 	@echo ""
-	@echo "make accurate"
-	@echo "    Simulate the accurate 2-Bit multiplier."
+	@echo "make sim"
+	@echo "    Simulate the configurable (APPROX) 2-Bit multiplier."
 	@echo ""
-	@echo "make approx"
-	@echo "    Simulate the approximate 2-Bit multiplier."
+	@echo "make synth"
+	@echo "    Synthesize the configurable (APPROX) 2-Bit multiplier."
 	@echo ""
-	@echo "make accurate-gui"
-	@echo "    Show the trace of the accurate 2-Bit multiplier simulation in GTKWave."
+	@echo "make sim-synth"
+	@echo "    Simulate the synthesized configurable (APPROX) 2-Bit multiplier."
 	@echo ""
-	@echo "make approx"
-	@echo "    Show the trace of the approximate 2-Bit multiplier simulation in GTKWave."
+	@echo "make sim-gui"
+	@echo "    Show the trace of the configurable (APPROX) 2-Bit multiplier simulation in GTKWave."
+	@echo ""
+	@echo "make sim-synth-gui"
+	@echo "    Show the trace of the synthesized configurable (APPROX) 2-Bit multiplier simulation in GTKWave."
 	@echo ""
 	@echo "make clean"
 	@echo "    Delete generated files"
@@ -96,29 +108,34 @@ help:
 #
 #------------------------------------------------------------------------------
 #
-# Define target for simulation of the approximate multiplier
+# Define target for simulation of the configurable (APPROX) multiplier
 #
-.PHONY: approx
-approx: MODE=1
-approx: $(SIM_DIR)/Approx2x2Mul.vcd
+.PHONY: sim
+sim:
+	@$(MAKE) $(SIM_DIR)/$(MODULE_NAME).vcd
 #
-# Define target for simulation of the accurate multiplier
+# Define target for synthesis of the configurable (APPROX) multiplier
 #
-.PHONY: accurate
-accurate: MODE=0
-accurate: $(SIM_DIR)/Accurate2x2Mul.vcd
+.PHONY: synth
+synth: $(SYNTH_DIR)/$(MODULE_NAME).v
 #
-# Define target to display the traces of the approximate multiplier
+# Define target for simulation of the synthesized configurable (APPROX) multiplier
 #
-.PHONY: approx-gui
-approx-gui: approx
-	gtkwave $(SIM_DIR)/Approx2x2Mul.vcd $(WAVE_FILE) &
+.PHONY: sim-synth
+sim-synth:
+	@$(MAKE) $(SIM_DIR)/$(MODULE_NAME)_synth.vcd
 #
-# Define target to display the traces of the accurate multiplier
+# Define target for GUI simulation of the configurable (APPROX) multiplier
 #
-.PHONY: accurate-gui
-accurate-gui: accurate
-	gtkwave $(SIM_DIR)/Accurate2x2Mul.vcd $(WAVE_FILE) &
+.PHONY: sim-gui
+sim-gui: sim
+	gtkwave $(SIM_DIR)/$(MODULE_NAME).vcd $(WAVE_FILE) &
+#
+# Define target for GUI simulation of the synthesized configurable (APPROX) multiplier
+#
+.PHONY: sim-synth-gui
+sim-synth-gui: sim-synth
+	gtkwave $(SIM_DIR)/$(MODULE_NAME)_synth.vcd $(WAVE_FILE) &
 #
 #------------------------------------------------------------------------------
 #
@@ -129,8 +146,8 @@ $(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH)
 	iverilog \
 		-l $(YOSYS_SIMCELLS) \
 		-o $(SIM_DIR)/$*.iverilog \
-		$^ \
-		-D TEST_MODE=$(MODE) \
+		$(SRCS) $(TESTBENCH) \
+		-D 'APPROX=$(APPROX)' \
 		-D 'VCD_FILE="$@"' \
 		-D 'ACC_TEST_VECTORS="$(TEST_VECTORS_ACC)"' \
 		-D 'APPROX_TEST_VECTORS="$(TEST_VECTORS_APPROX)"'
@@ -138,8 +155,35 @@ $(SIM_DIR)/%.vcd: $(SRCS) $(TESTBENCH)
 #
 #------------------------------------------------------------------------------
 #
+# Synthesize Verilog designs (each variant is a standalone, unparameterized
+# module - no shared submodules, so each is synthesized from its own file).
+# Mirrors the same passes as ../../global_synth.tcl, minus chparam (there are
+# no module parameters to fix here).
+#
+$(SYNTH_DIR)/%.v: %.v
+	mkdir -p $(dir $@)
+	yosys -p "read_verilog $<; hierarchy -check -top $*;; opt_expr;; proc;; opt_expr;; flatten;; opt_expr;; opt_clean;; opt;; write_verilog $@"
+#
+#------------------------------------------------------------------------------
+#
+# Simulate the synthesized Verilog designs
+#
+$(SIM_DIR)/%_synth.vcd: $(SYNTH_DIR)/%.v $(TESTBENCH)
+	mkdir -p $(dir $@)
+	iverilog \
+		-l $(YOSYS_SIMCELLS) \
+		-o $(SIM_DIR)/$*_synth.iverilog \
+		$(SYNTH_DIR)/$*.v $(TESTBENCH) \
+		-D 'APPROX=$(APPROX)' \
+		-D 'VCD_FILE="$@"' \
+		-D 'ACC_TEST_VECTORS="$(TEST_VECTORS_ACC)"' \
+		-D 'APPROX_TEST_VECTORS="$(TEST_VECTORS_APPROX)"'
+	vvp $(SIM_DIR)/$*_synth.iverilog
+#
+#------------------------------------------------------------------------------
+#
 # Clean directory
 #
 .PHONY: clean
-clean: 
-	rm -rf $(SIM_DIR)
+clean:
+	rm -rf $(SIM_DIR) $(SYNTH_DIR)

@@ -1,0 +1,54 @@
+name: Update Specs Table
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  collect-accuracy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v7
+
+      - name: Set up OSS CAD Suite (Yosys, Icarus Verilog, Python)
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          python-override: true
+          version: 2026-08-27
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install accuracy analysis dependencies
+        run: pip install -r HW/REF/requirements.txt
+
+      - name: Collect accuracy metrics
+        run: python3 .github/scripts/collect_accuracy.py
+
+      - name: Open PR with updated specs.csv
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain -- specs.csv)" ]; then
+            echo "specs.csv unchanged, nothing to do."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="bot/update-specs-table"
+          git checkout -B "$BRANCH"
+          git add specs.csv
+          git commit -m "chore: Update specs.csv accuracy data"
+          git push -f origin "$BRANCH"
+
+          gh pr create \
+            --title "Update specs.csv accuracy data" \
+            --body "Automated accuracy data refresh from a manual run of the Update Specs Table workflow." \
+            --base master \
+            --head "$BRANCH" \
+            || echo "PR already open for $BRANCH; branch updated in place."

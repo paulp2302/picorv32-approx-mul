@@ -29,6 +29,7 @@ SYNTH_DIR := ./synth
 SYNTH_OUT := $(SYNTH_DIR)/$(TOP_MODULE).v
 SYNTH_JSON := $(SYNTH_DIR)/$(TOP_MODULE).json
 ASC_FILE   := $(SYNTH_DIR)/$(TOP_MODULE).asc
+REPORT_FILE := $(SYNTH_DIR)/report.json
 SRC_DIRS := .
 GLOBAL_TCL := global_synth.tcl
 YOSYS_SIMCELLS := $(shell yosys-config --datdir/simcells.v)
@@ -131,10 +132,11 @@ $(SYNTH_JSON): $(SRCS) benchmark.v $(GLOBAL_TCL)
 
 # Place and route step
 $(ASC_FILE): $(SYNTH_JSON)
-	nextpnr-ice40 --$(DEVICE) --package $(PACKAGE) --json $< --asc $@ --freq $(TARGET_FREQ)
+	nextpnr-ice40 --$(DEVICE) --package $(PACKAGE) --json $< --asc $@ --freq $(TARGET_FREQ) --report $(REPORT_FILE)
 	@echo "=================================================================="
 	@echo " Look at the NextPNR log above for 'ICESTORM_LC' to get LUT count!"
 	@echo " Look at the NextPNR log above for 'Max frequency' to get Fmax!"
+	@echo " Structured data also written to: $(REPORT_FILE)"
 	@echo "=================================================================="
 
 #------------------------------------------------------------------------------

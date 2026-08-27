@@ -8,14 +8,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  collect-accuracy:
+  collect-specs:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository code
         uses: actions/checkout@v7
 
-      - name: Set up OSS CAD Suite (Yosys, Icarus Verilog, Python)
+      - name: Set up OSS CAD Suite (Yosys, NextPNR, Icarus Verilog, Python)
         uses: YosysHQ/setup-oss-cad-suite@v4
         with:
           python-override: true
@@ -27,6 +27,9 @@ jobs:
 
       - name: Collect accuracy metrics
         run: python3 .github/scripts/collect_accuracy.py
+
+      - name: Collect isolated PnR metrics (Mul LUTs, Isolated Fmax)
+        run: python3 .github/scripts/collect_pnr.py
 
       - name: Open PR with updated specs.csv
         env:
@@ -43,12 +46,15 @@ jobs:
           BRANCH="bot/update-specs-table"
           git checkout -B "$BRANCH"
           git add specs.csv
-          git commit -m "chore: Update specs.csv accuracy data"
+          git commit -m "chore: Update specs.csv"
           git push -f origin "$BRANCH"
 
-          gh pr create \
-            --title "Update specs.csv accuracy data" \
-            --body "Automated accuracy data refresh from a manual run of the Update Specs Table workflow." \
-            --base master \
-            --head "$BRANCH" \
-            || echo "PR already open for $BRANCH; branch updated in place."
+          if gh pr view "$BRANCH" >/dev/null 2>&1; then
+            echo "PR already open for $BRANCH; branch updated in place."
+          else
+            gh pr create \
+              --title "Update specs.csv" \
+              --body "Automated specs.csv refresh from a manual run of the Update Specs Table workflow." \
+              --base master \
+              --head "$BRANCH"
+          fi

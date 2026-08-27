@@ -35,6 +35,7 @@ combos=(
 )
 
 failures=()
+summary_rows=()
 ran=0
 
 for combo in "${combos[@]}"; do
@@ -44,12 +45,25 @@ for combo in "${combos[@]}"; do
   echo "::group::HW/MUL/$dir $target (N16=$n16 N8=$n8 N4=$n4 APPROX=$approx)"
   if make -C "HW/MUL/$dir" clean "$target" N16="$n16" N8="$n8" N4="$n4" APPROX="$approx"; then
     echo "PASS: $dir $target N16=$n16 N8=$n8 N4=$n4 APPROX=$approx"
+    summary_rows+=("| $dir | $n16 | $n8 | $n4 | $approx | :white_check_mark: PASS |")
   else
     echo "FAIL: $dir $target N16=$n16 N8=$n8 N4=$n4 APPROX=$approx"
     failures+=("$dir $target (N16=$n16 N8=$n8 N4=$n4 APPROX=$approx)")
+    summary_rows+=("| $dir | $n16 | $n8 | $n4 | $approx | :x: FAIL |")
   fi
   echo "::endgroup::"
 done
+
+if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+  {
+    echo "### \`$target\` sweep results"
+    echo ""
+    echo "| Dir | N16 | N8 | N4 | APPROX | Result |"
+    echo "|---|---|---|---|---|---|"
+    printf '%s\n' "${summary_rows[@]}"
+    echo ""
+  } >> "$GITHUB_STEP_SUMMARY"
+fi
 
 if [ "${#failures[@]}" -gt 0 ]; then
   echo "Failed configurations:"

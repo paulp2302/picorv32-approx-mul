@@ -3,7 +3,7 @@
 #
 # Usage: run_sim_sweep.sh [target]
 #   target: make target to run per combination, e.g. `sim` (default) or
-#   `sim-synth`. N16/N8/N4 are unused 2x2, and APPROX is unused for 
+#   `sim-synth`. N16/N8/N4 are unused for 2x2, and APPROX is unused for 
 #   everything else.
 #
 # Assumes Python (for the golden model) and the OSS CAD Suite (yosys,

@@ -1,6 +1,6 @@
 // Test vector for 2x2 multiplier
 // Format: a1 a0 b1 b0 out3 out2 out1 out0
-00_00_0000
+00_00_0001
 00_01_0000
 00_10_0000
 00_11_0000

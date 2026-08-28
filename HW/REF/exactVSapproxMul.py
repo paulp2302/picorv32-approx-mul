@@ -13,7 +13,10 @@ from approxmul2 import *
 from approxmulN import *
 
 
-def exactVSapproxMul(test_vec_size, width, n16, n8, n4, plot_scatter=True):
+def exactVSapproxMul(test_vec_size, width, n16, n8, n4, plot_scatter=True, seed=None):
+    if seed is not None:
+        random.seed(seed)
+
     N_ = {16: n16, 8: n8, 4: n4}
 
     in1, in2 = generate_input_vectors(test_vec_size, width)

@@ -27,6 +27,13 @@ The architecture is parameterized making the precision configurable. While the a
 - `SW/`: Contains custom C software test programs to evaluate the instruction on the bare-metal CPU.
 - `picorv32/`: The PicoRV32 softcore, modified to route our custom approximate multiply instruction through the Pico Co-Processor Interface (PCPI). The primary modifications reside in the `picorv32/picosoc/` directory (e.g., `firmware.c`, `picosoc.v`, `Makefile`).
 
+## Continuous Integration
+
+This repository uses two GitHub Actions workflows:
+
+- **[`hw-sim-sweep.yml`](.github/workflows/hw-sim-sweep.yml)** runs automatically on every push and pull request. It sweeps every structurally distinct `N16`/`N8`/`N4` configuration per multiplier size and runs both the pre-synthesis (`make sim`) and post-synthesis (`make sim-synth`) testbenches against the Python golden model, failing the build on any mismatch. Results are summarized as a pass/fail table in the workflow run's job summary.
+- **[`specs-table.yml`](.github/workflows/specs-table.yml)** is triggered manually. It recomputes accuracy metrics and place-and-route data (isolated multiplier and full SoC) for the four documented configurations, writes the results to `specs.csv`, regenerates the automated table in [Performance Results](#performance-results), and opens a pull request with the changes for review.
+
 # Reproducing the Code
 
 This repository features a master Makefile to quickly get started building various targets even without knowing the exact project structure. Typing `make help` in the root directory outlines the available targets.
@@ -42,23 +49,7 @@ Additionally, the system supports an Out-Of-Context (OOC) benchmark target (`mak
 To modify the hardware, look at the `HW/README.md` file first to get a good overview of the approximate multiplier implementation.
 
 ## Performance Results
-
-| Metric                      | N16=0, N8=0, N4=0 | N16=16, N8=0, N4=0 | N16=16, N8=8, N4=0 | N16=16, N8=8, N4=4|
-|-----------------------------|-------------------|--------------------|--------------------|-------------------|
-| Mul LUTs                    |          686 (12%)|           667 (12%)|            510 (9%)|           394 (7%)|
-| Total LUTs (PicoRV32 + Mul) |         4132 (78%)|          4120 (78%)|          3934 (74%)|         3838 (72%)|
-| Isolated Fmax               |          19.96 MHz|           14.26 MHz|           17.22 MHz|          18.48 MHz|
-| System Clock (Fmax, PicoRV) |          15.08 MHz|           13.61 MHz|           12.91 MHz|          13.39 MHz|
-| Latency (Cycles)            |                  1|                   1|                   1|                  1|
-| Median Relative Error       |               3.3%|                3.5%|                4.8%|                21%|
-| Max Relative Error          |              99.8%|                103%|             150564%|            590416%|
-
-### Automated Results
-
-The table below is regenerated from `specs.csv` by the "Update Specs Table" GitHub Actions
-workflow - do not edit it by hand. LUT percentages are relative to the iCE40 UP5k's 5280
-available logic cells (`ICESTORM_LC`). Latency is a constant 1 cycle for every configuration,
-since the PCPI interface (`HW/PCPI/pcpi.v`) is purely combinational.
+The table below is regenerated from `specs.csv` by the "Update Specs Table" GitHub Actions workflow. LUT percentages are relative to the iCE40 UP5k's 5280 available logic cells (`ICESTORM_LC`). Latency is a constant 1 cycle for every configuration, since the PCPI interface (`HW/PCPI/pcpi.v`) is purely combinational.
 
 <!-- SPECS_TABLE:START -->
 | Metric | N16=0, N8=0, N4=0 | N16=16, N8=0, N4=0 | N16=16, N8=8, N4=0 | N16=16, N8=8, N4=4 |
@@ -71,10 +62,12 @@ since the PCPI interface (`HW/PCPI/pcpi.v`) is purely combinational.
 | Max Relative Error | 99.9% | 428% | 136598% | 2587667% |
 <!-- SPECS_TABLE:END -->
 
+Mul LUTs drop with more approximation, by about 40% at the fully approximate configuration. Fmax does not follow the same clean trend. NextPNR's placement step uses a randomized heuristic search (simulated annealing) driven by an internal random-number generator. We do not use an explicitly fixed `--seed`, so each run starts that generator from a different state, and the same input netlist can end up placed differently on the FPGA fabric from run to run. Since achieved Fmax depends on the physical routing delays between placed cells rather than the logical design alone, that run-to-run placement variance propagates to the Fmax numbers. However, the dip at `N16=16, N8=0, N4=0` showed up consistently across multiple independent runs, suggesting that NextPNR finds this particular combination of approximate and exact adder stages harder to place and route well. On accuracy, median relative error stays low (3.4-4.7%) until `N4` approximation is enabled, where it jumps to 21.5%. The Max Relative Error is dominated by near-zero true products and should be read as a worst-case statistic, not typical behavior.
+
 ## Credits
 
 **Students**:
-- Paul Pölzl (NxN multipliers, scripting, integration of the python reference)
+- Paul Pölzl (NxN multipliers, scripting, integration of the python reference, CI workflows)
 - Samir Hodzic (2x2 multiplier, adders, result visualization)
 - Veronica Kimelman (PCPI interface, software, integration of the PicoRV32)
 

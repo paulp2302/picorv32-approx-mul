@@ -53,6 +53,24 @@ To modify the hardware, look at the `HW/README.md` file first to get a good over
 | Median Relative Error       |               3.3%|                3.5%|                4.8%|                21%|
 | Max Relative Error          |              99.8%|                103%|             150564%|            590416%|
 
+### Automated Results
+
+The table below is regenerated from `specs.csv` by the "Update Specs Table" GitHub Actions
+workflow - do not edit it by hand. LUT percentages are relative to the iCE40 UP5k's 5280
+available logic cells (`ICESTORM_LC`). Latency is a constant 1 cycle for every configuration,
+since the PCPI interface (`HW/PCPI/pcpi.v`) is purely combinational.
+
+<!-- SPECS_TABLE:START -->
+| Metric | N16=0, N8=0, N4=0 | N16=16, N8=0, N4=0 | N16=16, N8=8, N4=0 | N16=16, N8=8, N4=4 |
+|---|---|---|---|---|
+| Mul LUTs | N/A | N/A | N/A | N/A |
+| Total LUTs (PicoRV32 + Mul) | N/A | N/A | N/A | N/A |
+| Isolated Fmax | N/A | N/A | N/A | N/A |
+| System Clock (Fmax, PicoRV) | N/A | N/A | N/A | N/A |
+| Median Relative Error | N/A | N/A | N/A | N/A |
+| Max Relative Error | N/A | N/A | N/A | N/A |
+<!-- SPECS_TABLE:END -->
+
 ## Credits
 
 **Students**:

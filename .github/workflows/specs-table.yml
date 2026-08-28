@@ -41,12 +41,15 @@ jobs:
       - name: Collect full-SoC PnR metrics (Total LUTs, System Clock Fmax)
         run: python3 .github/scripts/collect_soc_pnr.py
 
-      - name: Open PR with updated specs.csv
+      - name: Update README.md's automated results table
+        run: python3 .github/scripts/update_readme.py
+
+      - name: Open PR with updated specs.csv and automated results table
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -z "$(git status --porcelain -- specs.csv)" ]; then
-            echo "specs.csv unchanged, nothing to do."
+          if [ -z "$(git status --porcelain -- specs.csv README.md)" ]; then
+            echo "specs.csv and README.md unchanged, nothing to do."
             exit 0
           fi
 
@@ -55,16 +58,16 @@ jobs:
 
           BRANCH="bot/update-specs-table"
           git checkout -B "$BRANCH"
-          git add specs.csv
-          git commit -m "chore: Update specs.csv"
+          git add specs.csv README.md
+          git commit -m "chore: Update specs.csv and README.md's automated results table"
           git push -f origin "$BRANCH"
 
           if gh pr view "$BRANCH" >/dev/null 2>&1; then
             echo "PR already open for $BRANCH; branch updated in place."
           else
             gh pr create \
-              --title "Update specs.csv" \
-              --body "Automated specs.csv refresh from a manual run of the Update Specs Table workflow." \
+              --title "Update specs.csv and README.md's automated results table" \
+              --body "Automated refresh of specs.csv and the auto-generated results table in README.md from a manual run of the Update Specs Table workflow." \
               --base master \
               --head "$BRANCH"
           fi

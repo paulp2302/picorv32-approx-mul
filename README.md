@@ -63,12 +63,12 @@ since the PCPI interface (`HW/PCPI/pcpi.v`) is purely combinational.
 <!-- SPECS_TABLE:START -->
 | Metric | N16=0, N8=0, N4=0 | N16=16, N8=0, N4=0 | N16=16, N8=8, N4=0 | N16=16, N8=8, N4=4 |
 |---|---|---|---|---|
-| Mul LUTs | N/A | N/A | N/A | N/A |
-| Total LUTs (PicoRV32 + Mul) | N/A | N/A | N/A | N/A |
-| Isolated Fmax | N/A | N/A | N/A | N/A |
-| System Clock (Fmax, PicoRV) | N/A | N/A | N/A | N/A |
-| Median Relative Error | N/A | N/A | N/A | N/A |
-| Max Relative Error | N/A | N/A | N/A | N/A |
+| Mul LUTs | 686 (12%) | 670 (12%) | 510 (9%) | 394 (7%) |
+| Total LUTs (PicoRV32 + Mul) | 4161 (78%) | 4082 (77%) | 3993 (75%) | 3910 (74%) |
+| Isolated Fmax | 20.35 MHz | 16.95 MHz | 18.82 MHz | 20.55 MHz |
+| System Clock (Fmax, PicoRV) | 18.62 MHz | 16.52 MHz | 17.41 MHz | 18.30 MHz |
+| Median Relative Error | 3.4% | 3.4% | 4.7% | 21.5% |
+| Max Relative Error | 99.9% | 428% | 136598% | 2587667% |
 <!-- SPECS_TABLE:END -->
 
 ## Credits
